@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第 6 讲 · PHP 面向对象编程 — 中文网页教程</title>
+<meta name="description" content="CSIS 3280 第 6 讲中文教程：PHP 类与对象、继承、命名空间、Composer 与 PSR-4 自动加载，含完整示例与练习。">
+<script>
+try {
+  var saved = localStorage.getItem("lecture06-theme");
+  if (saved) document.documentElement.setAttribute("data-theme", saved);
+  else if (window.matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.setAttribute("data-theme", "dark");
+} catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css?v=20261027e">
+</head>
+<body>
+<a class="skip-link" href="#main">跳到正文</a>
+<div class="reading-progress" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="zh.html">
+      <span class="brand-mark">3280</span>
+      <span class="brand-copy">
+        <strong>后端 Web 开发</strong>
+        <span>第 6 讲 · PHP 面向对象编程</span>
+      </span>
+    </a>
+    <nav class="header-actions" aria-label="页面控制">
+      <button class="menu-btn" type="button" data-toc-toggle aria-controls="toc" aria-expanded="false" aria-label="打开目录">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <span class="menu-label">目录</span>
+      </button>
+      <a class="lang-switch" href="index.html" lang="en" hreflang="en">English</a>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="切换主题" title="切换主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="toc-backdrop" aria-hidden="true"></div>
+
+<div class="layout">
+  <aside class="toc" id="toc" aria-label="教程目录">
+    <span class="toc-label">教程目录</span>
+    <ul class="toc-list">
+      <li class="toc-chapter"><span class="num">00</span><a href="#start">开始之前</a></li>
+      <li class="toc-chapter"><span class="num">01</span><a href="#ch1">类与对象</a></li>
+      <li class="toc-sub"><a href="#ch1-1">从数据到对象</a></li>
+      <li class="toc-sub"><a href="#ch1-2">声明与实例化</a></li>
+      <li class="toc-sub"><a href="#ch1-3">引用与对象运算符</a></li>
+      <li class="toc-sub"><a href="#ch1-4">UML 类图</a></li>
+      <li class="toc-chapter"><span class="num">02</span><a href="#ch2">封装与访问器</a></li>
+      <li class="toc-sub"><a href="#ch2-1">为什么用 private</a></li>
+      <li class="toc-sub"><a href="#ch2-2">Getter 与 Setter</a></li>
+      <li class="toc-sub"><a href="#ch2-3">三种可见性</a></li>
+      <li class="toc-chapter"><span class="num">03</span><a href="#ch3">构造方法与魔术方法</a></li>
+      <li class="toc-sub"><a href="#ch3-1">__construct()</a></li>
+      <li class="toc-sub"><a href="#ch3-2">构造器属性提升</a></li>
+      <li class="toc-sub"><a href="#ch3-3">__toString()</a></li>
+      <li class="toc-sub"><a href="#ch3-4">NULL 与虚拟属性</a></li>
+      <li class="toc-chapter"><span class="num">04</span><a href="#ch4">继承与子类</a></li>
+      <li class="toc-sub"><a href="#ch4-1">extends 与 is-a</a></li>
+      <li class="toc-sub"><a href="#ch4-2">继承中的构造方法</a></li>
+      <li class="toc-sub"><a href="#ch4-3">单继承与层级设计</a></li>
+      <li class="toc-chapter"><span class="num">05</span><a href="#ch5">可见性、抽象类与重写</a></li>
+      <li class="toc-sub"><a href="#ch5-1">protected</a></li>
+      <li class="toc-sub"><a href="#ch5-2">抽象类</a></li>
+      <li class="toc-sub"><a href="#ch5-3">方法重写</a></li>
+      <li class="toc-sub"><a href="#ch5-4">里氏替换原则</a></li>
+      <li class="toc-sub"><a href="#ch5-5">final</a></li>
+      <li class="toc-chapter"><span class="num">06</span><a href="#ch6">命名空间</a></li>
+      <li class="toc-sub"><a href="#ch6-1">解决类名冲突</a></li>
+      <li class="toc-sub"><a href="#ch6-2">完全限定名与 use</a></li>
+      <li class="toc-sub"><a href="#ch6-3">解析规则</a></li>
+      <li class="toc-chapter"><span class="num">07</span><a href="#ch7">Composer 与自动加载</a></li>
+      <li class="toc-sub"><a href="#ch7-1">composer.json</a></li>
+      <li class="toc-sub"><a href="#ch7-2">PSR-4 映射</a></li>
+      <li class="toc-sub"><a href="#ch7-3">生成并使用自动加载器</a></li>
+      <li class="toc-sub"><a href="#ch7-4">引入第三方库</a></li>
+      <li class="toc-chapter"><span class="num">08</span><a href="#ch8">综合实战</a></li>
+      <li class="toc-chapter"><span class="num">09</span><a href="#ch9">常见错误与调试</a></li>
+      <li class="toc-chapter"><span class="num">10</span><a href="#ch10">练习与答案</a></li>
+      <li class="toc-chapter"><span class="num">A</span><a href="#appendix">附录：速查表</a></li>
+    </ul>
+    <div class="toc-note">
+      <strong>怎么读</strong>
+      先按顺序读一遍，再打开第 8 章的完整项目动手敲。每段代码都可以直接复制。
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="reading">
+
+      <section class="cover" id="cover">
+        <div class="cover-grid">
+          <div>
+            <p class="eyebrow">CSIS 3280 · Backend Web Development · Week 06</p>
+            <h1>PHP 面向对象编程<span class="thin">第 6 讲 · 中文网页教程</span></h1>
+            <p class="cover-lead">
+              从类与对象，到继承、命名空间，再到 Composer 自动加载。用一条完整的代码线，把 CH18–CH20 串起来。
+            </p>
+            <p class="cover-lead" style="font-size:1rem;margin-top:16px;color:var(--muted)">
+              本页是中文教学版：解释讲义中的概念，补全可运行的代码，并给出练习。英文原版逐字保留了讲义原文。
+            </p>
+            <div class="cover-actions">
+              <a class="button button--primary" href="#start">
+                开始学习
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+              <a class="button button--ghost" href="index.html" lang="en" hreflang="en">Read in English</a>
+            </div>
+            <div class="cover-stats">
+              <div class="cover-stat"><strong>3</strong><span>大主题</span></div>
+              <div class="cover-stat"><strong>10</strong><span>章教程</span></div>
+              <div class="cover-stat"><strong>1</strong><span>完整项目</span></div>
+              <div class="cover-stat"><strong>PHP 8+</strong><span>代码版本</span></div>
+            </div>
+            <p style="margin-top:22px">
+              <button class="source-btn" type="button" data-lightbox="assets/pages/page-01.png" data-slide="01">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+                查看讲义原始封面
+              </button>
+            </p>
+          </div>
+          <div class="hero-card" aria-label="PHP 类示例">
+            <div class="hero-card-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span>src/Product.php</span>
+            </div>
+<pre><span class="tok-com">&lt;?php</span>
+
+<span class="tok-key">class</span> <span class="tok-type">Product</span>
+{
+    <span class="tok-key">public</span> <span class="tok-var">string</span> <span class="tok-var">$name</span>;
+    <span class="tok-key">public</span> <span class="tok-var">float</span> <span class="tok-var">$price</span>;
+}
+
+<span class="tok-var">$product1</span> = <span class="tok-key">new</span> <span class="tok-type">Product</span>();
+<span class="tok-var">$product1</span>-&gt;<span class="tok-var">name</span> = <span class="tok-str">'hammer'</span>;</pre>
+            <p class="hero-caption">类 = 蓝图；对象 = 按蓝图制造出来的实例。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="start" class="lesson">
+        <div class="lesson-head">
+          <span class="slide-chip">准备</span>
+          <div class="lesson-head-main">
+            <h2 style="font-family:var(--font-serif);font-size:clamp(1.8rem,3.4vw,2.4rem)">开始之前</h2>
+            <p class="lesson-deck">这份教程适合谁、怎么用，以及需要准备什么</p>
+          </div>
+        </div>
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>学完这一讲，你应该能够</h3>
+            <ul>
+              <li>写出一个包含属性、方法、构造方法和访问器的 PHP 类；</li>
+              <li>解释 <code>public</code>、<code>protected</code>、<code>private</code> 的区别，并用它们保护对象状态；</li>
+              <li>用 <code>extends</code> 建立继承关系，正确重写方法并调用 <code>parent::</code>；</li>
+              <li>判断一个继承设计是否违反里氏替换原则（LSP）；</li>
+              <li>用命名空间组织类，并用 Composer 的 PSR-4 自动加载器替代一长串 <code>require_once</code>；</li>
+              <li>完成一个可运行的小项目：商品、食品、甜点，以及自动加载的前端控制器。</li>
+            </ul>
+          </div>
+
+          <h2 id="start-1">这份教程与英文教材的关系</h2>
+          <p>本页不是逐句翻译，而是<strong>中文教学版</strong>：英文教材页把讲义原文按顺序完整搬运；这一页负责解释“为什么”、补全“怎么运行”，并加入练习与排错清单。两页可以对照阅读：每个概念都标注了对应的幻灯片范围。</p>
+          <div class="translation-note">
+            <span class="flag">对照</span>
+            <div><strong>英文原版：</strong>逐字保留讲义的标题、要点、代码与注释，适合核对原始表述。<br><strong>中文教程：</strong>用中文重新组织讲解，补充可运行示例、常见错误和练习答案。</div>
+          </div>
+
+          <h2 id="start-2">预备知识与运行环境</h2>
+          <p>你应当已经会写 PHP 的变量、数组、函数、条件与循环，并且用过 <code>include</code> 或 <code>require</code>。本讲默认使用 <strong>PHP 8.0 或更高版本</strong>，因为代码中使用了类型化属性（PHP 7.4+）和构造器属性提升（PHP 8.0+）。</p>
+          <pre data-lang="Terminal" data-title="检查环境"><code>php -v
+composer -V</code></pre>
+          <p>如果 <code>composer</code> 还没有安装，可以到 <code>getcomposer.org</code> 按操作系统说明安装。后面的第 7 章会从零开始配置，不需要提前创建项目。</p>
+
+          <h2 id="start-3">学习路线</h2>
+          <div class="roadmap">
+            <a href="#ch1">类与对象<br><span class="small">把数据和行为放在一起</span></a>
+            <a href="#ch2">封装<br><span class="small">private 与访问器</span></a>
+            <a href="#ch3">构造方法与魔术方法<br><span class="small">对象如何初始化</span></a>
+            <a href="#ch4">继承<br><span class="small">复用共同行为</span></a>
+            <a href="#ch5">重写与 LSP<br><span class="small">让子类安全替换父类</span></a>
+            <a href="#ch6">命名空间<br><span class="small">解决类名冲突</span></a>
+            <a href="#ch7">Composer<br><span class="small">自动加载类文件</span></a>
+            <a href="#ch8">综合实战<br><span class="small">完整小商店</span></a>
+          </div>
+
+          <div class="takeaway">
+            <h3>本讲的主线</h3>
+            <p>先用<strong>类</strong>封装数据和行为，再用<strong>继承</strong>复用共同部分，接着用<strong>命名空间</strong>避免类名冲突，最后让 <strong>Composer</strong> 按命名空间自动找到并加载文件。四件事连起来，就是从“能写类”到“能组织一个 PHP 项目”。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch1" class="chapter">
+        <header class="chapter-cover" data-number="01">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 01 章</span><span>CH18 · Slides 3–10</span></div>
+            <h2>类与对象</h2>
+            <p>把“数据”和“操作数据的函数”放进同一个结构。理解类、对象、引用和 UML，是后面继承与命名空间的基础。</p>
+            <div class="chapter-agenda">对应讲义：<strong>Classes and Objects (CH18)</strong></div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>本章目标</h3>
+            <ul>
+              <li>区分“类”和“对象”，能说出类声明包含哪两部分；</li>
+              <li>用 <code>class</code>、类型化属性和 <code>new</code> 写出第一个可运行示例；</li>
+              <li>理解对象变量保存的是对象的引用，而不是对象内容的拷贝；</li>
+              <li>读懂 UML 类图中的 <code>+</code>、<code>-</code>、<code>#</code> 和属性类型。</li>
+            </ul>
+          </div>
+
+          <h2 id="ch1-1"><span class="section-num">1.1</span>从“散装数据”到“对象”</h2>
+          <p>假设你要表示一件商品。最直接的做法是用几个互不相关的变量：</p>
+          <pre data-lang="PHP" data-title="散装变量"><code>$name = 'hammer';
+$price = 9.99;
+
+print $name . ' costs ' . $price;</code></pre>
+          <p>只有一件商品时没问题。但商品一多，你就要维护多个数组，或者一堆带下标的变量；更麻烦的是，<strong>“商品能做什么”</strong>（打折、格式化价格、校验价格）散落在代码各处，和“商品有什么”分开了。</p>
+          <p><strong>类（class）</strong>把这两件事放到一起：</p>
+          <ul>
+            <li><strong>属性（properties）</strong>：对象“有什么”，例如名称、价格；在 PHP 里就是变量。</li>
+            <li><strong>方法（methods）</strong>：对象“能做什么”，例如读取名称、修改价格；在 PHP 里就是函数。</li>
+          </ul>
+          <p>类本身只是<strong>蓝图</strong>，不会占用一个具体商品的位置；<strong>对象（object）</strong>才是按蓝图创建出来的实例。一个类可以创建任意多个对象，每个对象都有自己独立的一份属性值。</p>
+          <div class="compare">
+            <div>
+              <h4>类（class）</h4>
+              <ul>
+                <li>是定义、是模板；</li>
+                <li>描述这一类对象共有的属性和方法；</li>
+                <li>例如：<code>Product</code> 表示“商品”这个概念。</li>
+              </ul>
+            </div>
+            <div>
+              <h4>对象（object）</h4>
+              <ul>
+                <li>是实例、是具体存在；</li>
+                <li>拥有自己的属性值；</li>
+                <li>例如：名称是 hammer、价格是 9.99 的那件商品。</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="ch1-2"><span class="section-num">1.2</span>声明第一个类并创建对象</h2>
+          <p>按照课程约定，类名和类声明文件名都以<strong>大写字母</strong>开头，类名使用 <strong>PascalCase</strong>（每个单词首字母大写）。把下面的代码保存为 <code>src/Product.php</code>：</p>
+          <pre data-lang="PHP" data-title="src/Product.php"><code>&lt;?php
+
+class Product
+{
+    public string $name;
+    public float $price;
+}</code></pre>
+          <p>逐行看：</p>
+          <ul>
+            <li><code>class Product</code> 声明了一个名为 <code>Product</code> 的类；</li>
+            <li><code>public</code> 是可见性，表示类的外部也可以直接访问这个属性；</li>
+            <li><code>string</code> 和 <code>float</code> 是属性的类型，PHP 会据此检查赋值；</li>
+            <li><code>$name</code>、<code>$price</code> 是属性变量，声明时<strong>带 <code>$</code></strong>。</li>
+          </ul>
+          <p>然后在入口文件里引入类文件，用 <code>new</code> 创建对象：</p>
+          <pre data-lang="PHP" data-title="public/index.php"><code>&lt;?php
+require_once __DIR__ . '/../src/Product.php';
+
+$product1 = new Product();
+$product1-&gt;name = 'hammer';
+$product1-&gt;price = 9.99;
+
+print 'product 1 name = ' . $product1-&gt;name;</code></pre>
+          <p>运行后输出：</p>
+          <pre class="output" data-lang="Output"><code>product 1 name = hammer</code></pre>
+          <p>这里发生了三件事：</p>
+          <ol>
+            <li><code>require_once</code> 把 <code>Product.php</code> 读进来，让 PHP 知道 <code>Product</code> 这个类存在；</li>
+            <li><code>new Product()</code> 按蓝图创建一个对象，并把对象的引用赋给 <code>$product1</code>；</li>
+            <li><code>$product1-&gt;name = 'hammer'</code> 通过对象运算符访问属性并赋值。</li>
+          </ol>
+          <div class="callout">
+            <span class="callout-label">易错点</span>
+            <p>访问对象属性时，属性名前面<strong>不加 <code>$</code></strong>：写 <code>$product1-&gt;name</code>，不要写 <code>$product1-&gt;$name</code>。后者会被理解成“用变量 <code>$name</code> 的值作为属性名”，是另一回事。</p>
+          </div>
+          <div class="callout callout--quiet">
+            <span class="callout-label">命名与大小写</span>
+            <p>类名 <code>Product</code> 和文件名 <code>Product.php</code> 保持大小写一致。macOS 的文件系统默认不区分大小写，但部署到 Linux 服务器后，<code>product.php</code> 和 <code>Product.php</code> 是两个不同的文件，自动加载会直接失败。</p>
+          </div>
+
+          <h2 id="ch1-3"><span class="section-num">1.3</span>对象变量保存的是“引用”</h2>
+          <p>讲义特别强调：<code>$myObject</code> 并不真正包含对象本身，而是保存了指向对象的<strong>引用</strong>。这意味着把一个对象变量赋给另一个变量时，复制的是“指向同一个对象的引用”，不是对象内容的副本：</p>
+          <pre data-lang="PHP" data-title="两个变量指向同一个对象"><code>$product1 = new Product();
+$product1-&gt;name = 'hammer';
+
+$product2 = $product1;          // 复制的是引用
+$product2-&gt;name = 'saw';
+
+print $product1-&gt;name;          // saw</code></pre>
+          <p>输出是 <code>saw</code>，因为 <code>$product1</code> 和 <code>$product2</code> 指向的是同一个对象。只有显式使用 <code>clone</code>，才会得到一份属性值的拷贝：</p>
+          <pre data-lang="PHP" data-title="使用 clone"><code>$product2 = clone $product1;
+$product2-&gt;name = 'saw';
+
+print $product1-&gt;name;          // hammer</code></pre>
+          <p>对象运算符 <code>-&gt;</code> 用来访问属性或调用方法；“对象运算符”这个名字在讲义中也写作 <strong>arrow object operator</strong>。它和数组下标、命名空间的反对角线是三种完全不同的符号，初学时不要混用。</p>
+
+          <h2 id="ch1-4"><span class="section-num">1.4</span>读懂 UML 类图</h2>
+          <p>讲义用 UML 类图表示 <code>Product</code>：矩形分三栏，第一栏是类名，第二栏是属性，第三栏是方法（本例没有方法）。属性的写法通常是“可见性符号 + 名称: 类型”。</p>
+          <div class="diagram">
+            <div class="uml-row">
+              <div class="uml-col">
+                <div class="uml-box">
+                  <div class="uml-name">Product</div>
+                  <div class="uml-section">
+                    <div>+name: String</div>
+                    <div>+price: Float</div>
+                  </div>
+                </div>
+                <p class="diagram-caption">UML 类图：+ 表示 public</p>
+              </div>
+              <div class="uml-col">
+                <div class="instance-box">
+                  <div class="instance-name"><u>$product1</u>: Product</div>
+                  <div class="instance-body">
+                    <div>name = "hammer"</div>
+                    <div>price = 9.99</div>
+                  </div>
+                </div>
+                <p class="diagram-caption">一个具体的 Product 实例</p>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>符号</th><th>可见性</th><th>含义</th></tr></thead>
+              <tbody>
+                <tr><td><code>+</code></td><td>public</td><td>任何代码都可以访问</td></tr>
+                <tr><td><code>-</code></td><td>private</td><td>只有类内部可以访问</td></tr>
+                <tr><td><code>#</code></td><td>protected</td><td>类内部和子类可以访问</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>UML 是设计阶段的“共同语言”：它不关心 PHP 具体怎么写，只描述类与类之间的关系。后面继承、抽象类、protected 的图都会继续使用这套符号。</p>
+
+          <div class="takeaway">
+            <h3>本章小结</h3>
+            <ul>
+              <li>类 = 属性 + 方法；对象 = 按类创建出来的实例。</li>
+              <li><code>new ClassName()</code> 创建对象，<code>-&gt;</code> 访问属性或方法。</li>
+              <li>对象变量保存引用；普通赋值不会复制对象，<code>clone</code> 才会。</li>
+              <li>类名与文件名用 PascalCase，并保持大小写一致。</li>
+            </ul>
+          </div>
+
+          <div class="details">
+            <details>
+              <summary>小练习：写出 Book 类</summary>
+              <div class="details-body">
+                <p>声明一个 <code>Book</code> 类，包含公开属性 <code>title</code>（string）和 <code>price</code>（float）。创建一个对象，设置标题为 <code>PHP Basics</code>、价格为 <code>39.5</code>，然后输出：<code>PHP Basics costs 39.5</code>。</p>
+                <pre data-lang="PHP" data-title="参考答案"><code>&lt;?php
+
+class Book
+{
+    public string $title;
+    public float $price;
+}
+
+$book = new Book();
+$book-&gt;title = 'PHP Basics';
+$book-&gt;price = 39.5;
+
+print $book-&gt;title . ' costs ' . $book-&gt;price;</code></pre>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch2" class="chapter">
+        <header class="chapter-cover" data-number="02">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 02 章</span><span>CH18 · Slides 6–7</span></div>
+            <h2>封装与访问器</h2>
+            <p>把属性设为 private，让所有读写都经过方法。这样，校验规则只需要写在一个地方，对象就不会进入非法状态。</p>
+            <div class="chapter-agenda">对应讲义：<strong>Private properties and accessor methods</strong></div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>本章目标</h3>
+            <ul>
+              <li>说清为什么“公开属性”会破坏对象的一致性；</li>
+              <li>写出规范的 getter / setter，并在 setter 中做校验；</li>
+              <li>掌握 <code>$this</code> 的含义，以及 public / protected / private 的访问范围；</li>
+              <li>避免“为每个属性机械生成 getter/setter”的坏习惯。</li>
+            </ul>
+          </div>
+
+          <h2 id="ch2-1"><span class="section-num">2.1</span>为什么要把属性设为 private？</h2>
+          <p>上一章的 <code>Product</code> 属性是 public，外部代码可以随手写：</p>
+          <pre data-lang="PHP" data-title="公开属性的风险"><code>$product1-&gt;price = -0.5;   // 负价格也能写进去
+$product1-&gt;name = '';       // 空名称也能写进去</code></pre>
+          <p>如果业务规则要求“价格不能为负”，你就必须在<strong>每一个</strong>给价格赋值的地方都检查一遍。只要漏掉一处，对象就可能带着非法数据继续运行，错误可能很晚才暴露。</p>
+          <p>把属性声明为 <code>private</code> 后，类外部不能直接读写它，只能通过公开的方法。这样，校验逻辑集中在 setter 里，对象的“不变量”（invariant）就能一直被维护：</p>
+          <pre data-lang="PHP" data-title="封装后的写入路径"><code>$product1-&gt;setPrice(-0.5);  // setter 可以拒绝
+$product1-&gt;price = -0.5;    // 直接报错：Cannot access private property</code></pre>
+          <div class="callout">
+            <span class="callout-label">讲义的表述</span>
+            <p>“Declaring a property to be private is a good practice to enforce validation.”——把属性设为 private 是一种强制执行校验的好做法。它并不会自动校验，而是<strong>迫使</strong>所有外部访问都走你写好的方法。</p>
+          </div>
+
+          <h2 id="ch2-2"><span class="section-num">2.2</span>Getter 与 Setter：把访问变成方法</h2>
+          <p><strong>Getter</strong> 负责读取属性，<strong>setter</strong> 负责写入属性。它们统称为<strong>访问器（accessor methods）</strong>。下面是加了封装的 <code>Product</code>：</p>
+          <pre data-lang="PHP" data-title="src/Product.php"><code>&lt;?php
+
+class Product
+{
+    private string $name;
+    private float $price;
+
+    public function getName(): string
+    {
+        return $this-&gt;name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this-&gt;name = $name;
+    }
+
+    public function getPrice(): float
+    {
+        return $this-&gt;price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        if ($price &gt;= 0) {
+            $this-&gt;price = $price;
+        }
+    }
+}</code></pre>
+          <p>几个关键点：</p>
+          <ul>
+            <li><code>$this</code> 代表“当前这个对象”。在方法内部访问自己的属性，必须写 <code>$this-&gt;name</code>，不能只写 <code>$name</code>（那只是方法的局部变量）。</li>
+            <li>方法名后面的 <code>: string</code>、<code>: float</code> 是返回类型；<code>: void</code> 表示不返回任何值。</li>
+            <li><code>setPrice</code> 只在价格大于等于 0 时赋值。输入非法时，属性保持原值，这就是校验。</li>
+            <li>getter 只负责读取，不修改状态；setter 只负责写入，并在这里集中校验。</li>
+          </ul>
+          <p>用讲义中的测试脚本验证：</p>
+          <pre data-lang="PHP" data-title="测试校验"><code>&lt;?php
+require_once __DIR__ . '/../src/Product.php';
+
+$product1 = new Product();
+$product1-&gt;setName('hammer');
+$product1-&gt;setPrice(9.99);
+
+print "(initial value) product 1 price = {$product1-&gt;getPrice()}";
+$product1-&gt;setPrice(-0.5);
+print '&lt;br&gt;(test 1) trying -0.5: ';
+print "product 1 price = {$product1-&gt;getPrice()}";
+
+$product1-&gt;setPrice(22);
+print '&lt;br&gt;(test 2) trying 22: ';
+print "product 1 price = {$product1-&gt;getPrice()}";</code></pre>
+          <p>浏览器中的输出：</p>
+          <pre class="output" data-lang="Output"><code>(initial value) product 1 price = 9.99
+(test 1) trying -0.5: product 1 price = 9.99
+(test 2) trying 22: product 1 price = 22</code></pre>
+          <p>第二次调用 <code>setPrice(-0.5)</code> 时，条件不成立，属性没有被覆盖，所以仍然是 9.99。第三次传入 22，校验通过，价格更新为 22。</p>
+
+          <div class="callout callout--teal">
+            <span class="callout-label">类型化属性的初始化</span>
+            <p>本例的 <code>private float $price;</code> 没有默认值。在第一次 <code>setPrice()</code> 之前读取 <code>getPrice()</code>，会得到 “Typed property must not be accessed before initialization” 错误。这是 PHP 在帮你发现“对象还没准备好”。可以给安全默认值，或在构造方法里强制初始化（第 3 章）。</p>
+          </div>
+
+          <h2 id="ch2-3"><span class="section-num">2.3</span>public、protected、private 的访问范围</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>访问位置</th><th>public</th><th>protected</th><th>private</th></tr></thead>
+              <tbody>
+                <tr><td>声明它的类内部</td><td class="ok">✓</td><td class="ok">✓</td><td class="ok">✓</td></tr>
+                <tr><td>继承它的子类内部</td><td class="ok">✓</td><td class="ok">✓</td><td class="no">✗</td></tr>
+                <tr><td>完全不相干的外部代码</td><td class="ok">✓</td><td class="no">✗</td><td class="no">✗</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>讲义用一句话概括：<strong>protected 比 public 更严格，但比 private 更宽松</strong>。它的典型用途是“给子类用的内部实现”：外部不能碰，但继承家族内部可以共享。</p>
+          <p>可见性不是“安全加密”，而是<strong>设计边界</strong>。它告诉其他开发者：哪些东西是稳定接口，哪些只是内部细节。把内部细节藏起来，未来修改实现时就不容易破坏调用方。</p>
+
+          <div class="callout callout--quiet">
+            <span class="callout-label">设计建议</span>
+            <p>不要机械地给每个 private 属性都配一对 getter/setter。如果某个值只应该通过业务动作改变，就直接暴露业务方法，例如 <code>deposit()</code>、<code>withdraw()</code>、<code>applyDiscount()</code>。访问器是工具，不是目的。</p>
+          </div>
+
+          <div class="takeaway">
+            <h3>本章小结</h3>
+            <ul>
+              <li><code>private</code> 阻止外部直接读写，把访问集中到方法里。</li>
+              <li>getter 读取，setter 写入；校验放在 setter 中。</li>
+              <li><code>$this</code> 指向当前对象；<code>$this-&gt;price</code> 访问属性。</li>
+              <li>public / protected / private 是设计边界，不只是语法限制。</li>
+            </ul>
+          </div>
+
+          <div class="details">
+            <details>
+              <summary>小练习：BankAccount</summary>
+              <div class="details-body">
+                <p>写一个 <code>BankAccount</code> 类：private 属性 <code>balance</code>（float，初始 0）；提供 <code>deposit(float $amount)</code> 和 <code>withdraw(float $amount)</code>，要求金额必须大于 0，取款不能超过余额；提供 <code>getBalance()</code>。</p>
+                <pre data-lang="PHP" data-title="参考答案"><code>&lt;?php
+
+class BankAccount
+{
+    private float $balance = 0.0;
+
+    public function getBalance(): float
+    {
+        return $this-&gt;balance;
+    }
+
+    public function deposit(float $amount): void
+    {
+        if ($amount &gt; 0) {
+            $this-&gt;balance += $amount;
+        }
+    }
+
+    public function withdraw(float $amount): void
+    {
+        if ($amount &gt; 0 &amp;&amp; $amount &lt;= $this-&gt;balance) {
+            $this-&gt;balance -= $amount;
+        }
+    }
+}</code></pre>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch3" class="chapter">
+        <header class="chapter-cover" data-number="03">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 03 章</span><span>CH18 · Slides 8–10</span></div>
+            <h2>构造方法与魔术方法</h2>
+            <p>让对象一创建就处于可用状态：用 <code>__construct()</code> 初始化，用 <code>__toString()</code> 输出，用可空返回值和自定义方法表达更多信息。</p>
+            <div class="chapter-agenda">对应讲义：<strong>Constructor magic method · __toString magic method and NULL reference · Custom method and virtual attributes</strong></div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>本章目标</h3>
+            <ul>
+              <li>用 <code>__construct()</code> 接收参数并初始化属性；</li>
+              <li>理解 PHP 8 的构造器属性提升，以及它绕过 setter 的取舍；</li>
+              <li>用 <code>__toString()</code> 让对象可以直接被 <code>print</code> / <code>echo</code>；</li>
+              <li>用 <code>?Type</code> 和 <code>null</code> 表示“可能没有结果”；</li>
+              <li>用自定义方法计算虚拟属性，而不是把派生数据存进属性。</li>
+            </ul>
+          </div>
+
+          <h2 id="ch3-1"><span class="section-num">3.1</span><code>__construct()</code>：对象出生时运行</h2>
+          <p>PHP 的构造方法不叫类名，而是固定的魔术方法名 <code>__construct()</code>。每次执行 <code>new Product(...)</code> 时，PHP 会自动调用它，你不需要手动调用。</p>
+          <p>把参数传进构造方法，就可以在对象创建时完成初始化，避免“先 new，再逐个 set”的中间状态：</p>
+          <pre data-lang="PHP" data-title="src/Product.php"><code>&lt;?php
+
+class Product
+{
+    private string $name;
+    private float $price;
+
+    public function __construct(string $name, float $price)
+    {
+        $this-&gt;setName($name);
+        $this-&gt;setPrice($price);
+    }
+
+    public function getName(): string
+    {
+        return $this-&gt;name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this-&gt;name = $name;
+    }
+
+    public function getPrice(): float
+    {
+        return $this-&gt;price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        if ($price &gt;= 0) {
+            $this-&gt;price = $price;
+        }
+    }
+}</code></pre>
+          <pre data-lang="PHP" data-title="创建对象"><code>require_once __DIR__ . '/../src/Product.php';
+
+$product1 = new Product('hammer', 9.99);
+
+print 'product 1 name = ' . $product1-&gt;getName();
+print ", and price = {$product1-&gt;getPrice()}";</code></pre>
+          <p>输出：</p>
+          <pre class="output" data-lang="Output"><code>product 1 name = hammer, and price = 9.99</code></pre>
+          <p>注意构造方法内部调用的是 <code>setName()</code> / <code>setPrice()</code>，而不是直接写 <code>$this-&gt;price = $price</code>。这样，setter 里的校验仍然生效，初始化路径和普通写入路径保持一致。讲义把这一点单独标了出来。</p>
+          <div class="callout">
+            <span class="callout-label">约定</span>
+            <p>讲义要求把 <code>__construct()</code> 声明在类的第一个位置。PHP 语法并不强制顺序，但把构造方法放在最前面，读者一眼就能看到“创建这个对象需要什么”。</p>
+          </div>
+          <div class="callout callout--quiet">
+            <span class="callout-label">如果价格非法</span>
+            <p>构造时传入负价格，<code>setPrice()</code> 会拒绝赋值，<code>$price</code> 保持未初始化。此后读取它会报错。更严格的做法是在 setter 中抛出异常，让创建直接失败，而不是留下一个半成品对象。异常处理超出本讲范围，知道这个方向即可。</p>
+          </div>
+
+          <h2 id="ch3-2"><span class="section-num">3.2</span>构造器属性提升（PHP 8+）</h2>
+          <p>讲义提到可以用“promotion”简化类声明：在构造方法的参数前写可见性，PHP 会自动把参数声明成同名属性，并完成赋值。</p>
+          <pre data-lang="PHP" data-title="属性提升"><code>class Product
+{
+    public function __construct(
+        private string $name,
+        private float $price
+    ) {
+    }
+
+    public function getName(): string
+    {
+        return $this-&gt;name;
+    }
+
+    public function getPrice(): float
+    {
+        return $this-&gt;price;
+    }
+}</code></pre>
+          <p>这段代码等价于“声明两个 private 属性 + 在构造方法里逐个赋值”，但短得多。适合属性较多、初始化逻辑简单的值对象。</p>
+          <div class="callout">
+            <span class="callout-label">取舍</span>
+            <p>属性提升会<strong>直接写入属性</strong>，不会经过 setter。如果价格必须校验，就不要只靠提升；可以在构造方法体内再调用校验方法，或者保留显式属性 + setter 的写法。简洁和可验证性需要权衡。</p>
+          </div>
+
+          <h2 id="ch3-3"><span class="section-num">3.3</span><code>__toString()</code>：把对象变成字符串</h2>
+          <p>当对象被放进字符串上下文（<code>print</code>、<code>echo</code>、字符串拼接）时，如果类定义了 <code>__toString()</code>，PHP 会自动调用它。方法必须返回 <code>string</code>：</p>
+          <pre data-lang="PHP" data-title="src/Product.php"><code>public function __toString(): string
+{
+    return '(Product) name = ' . $this-&gt;name . ', and price = ' . $this-&gt;price;
+}</code></pre>
+          <pre data-lang="PHP" data-title="直接输出对象"><code>$product1 = new Product('hammer', 9.99);
+print $product1;</code></pre>
+          <pre class="output" data-lang="Output"><code>(Product) name = hammer, and price = 9.99</code></pre>
+          <p>如果没有 <code>__toString()</code>，直接 <code>print</code> 一个对象会得到 “Object of class Product could not be converted to string” 的错误。它适合调试输出、日志摘要，不适合承载复杂业务逻辑。</p>
+
+          <h2 id="ch3-4"><span class="section-num">3.4</span>NULL、可空类型与虚拟属性</h2>
+          <p>有些操作可能“查不到结果”，这时方法可以返回 <code>null</code>。在返回类型前加 <code>?</code>，表示“这个类型或 null”：</p>
+          <pre data-lang="PHP" data-title="可空返回类型"><code>public function blogFromId(int $id): ?Blog
+{
+    if ($id &gt; 0) {
+        return $this-&gt;blogRepository-&gt;find($id);
+    }
+    return null;
+}</code></pre>
+          <p><code>?Blog</code> 读作 “Blog or null”。调用方必须先判断，再使用返回值：</p>
+          <pre data-lang="PHP" data-title="调用方检查"><code>$blog = $blogService-&gt;blogFromId(0);
+
+if ($blog === null) {
+    print 'Blog not found';
+} else {
+    print $blog-&gt;title;
+}</code></pre>
+          <p>讲义示例里用了 <code>is_numeric($id)</code>，但参数已经声明为 <code>int</code>，这个检查通常是多余的。真正重要的是：<strong>无法产生对象时，明确返回 null，并让调用方处理</strong>。</p>
+
+          <h3>虚拟属性：算出来的信息</h3>
+          <p>“虚拟属性”不是真的存了一个属性，而是用方法根据已有属性计算出一个新值。例如，只存出生日期，需要时计算年龄：</p>
+          <pre data-lang="PHP" data-title="用方法计算年龄"><code>class Person
+{
+    public function __construct(private DateTimeImmutable $birthDate)
+    {
+    }
+
+    public function age(): int
+    {
+        $today = new DateTimeImmutable('today');
+        return $this-&gt;birthDate-&gt;diff($today)-&gt;y;
+    }
+}
+
+$person = new Person(new DateTimeImmutable('2000-05-10'));
+print $person-&gt;age();   // 例如 26</code></pre>
+          <p>为什么不在构造时把 <code>age</code> 存成属性？因为年龄会随时间变化，存下来很快就会过期；而出生日期不会变，是真正的事实。虚拟属性把“会变化的数据”留给计算，避免同步问题。</p>
+          <p>调用时注意：<code>age()</code> 是方法，要写括号；不要写成 <code>$person-&gt;age</code>。如果希望像属性一样访问，也可以定义 <code>getAge()</code>，但本质上仍是方法调用。</p>
+
+          <div class="takeaway">
+            <h3>本章小结</h3>
+            <ul>
+              <li><code>__construct()</code> 在 <code>new</code> 时自动运行，用来建立有效状态。</li>
+              <li>构造方法里调用 setter，可以复用校验逻辑。</li>
+              <li>属性提升让声明更短，但会绕过 setter。</li>
+              <li><code>__toString()</code> 必须返回字符串；<code>?Type</code> 表示可空。</li>
+              <li>虚拟属性是算出来的，不需要存储。</li>
+            </ul>
+          </div>
+
+          <div class="details">
+            <details>
+              <summary>小练习：给 Book 加上构造方法与 __toString()</summary>
+              <div class="details-body">
+                <p>把第 1 章的 <code>Book</code> 改成 private 属性，增加构造方法（title、price）和 <code>__toString()</code>，输出格式为 <code>Book: PHP Basics, 39.5</code>。</p>
+                <pre data-lang="PHP" data-title="参考答案"><code>&lt;?php
+
+class Book
+{
+    public function __construct(
+        private string $title,
+        private float $price
+    ) {
+    }
+
+    public function __toString(): string
+    {
+        return "Book: {$this-&gt;title}, {$this-&gt;price}";
+    }
+}
+
+$book = new Book('PHP Basics', 39.5);
+print $book;</code></pre>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch4" class="chapter">
+        <header class="chapter-cover" data-number="04">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 04 章</span><span>CH19 · Slides 11–14</span></div>
+            <h2>继承与子类</h2>
+            <p>把共同的属性和方法放进父类，让子类自动拥有它们，再添加自己特有的部分。继承表达的是“is-a”（是一种）关系。</p>
+            <div class="chapter-agenda">对应讲义：<strong>Inheritance and Subclasses</strong></div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>本章目标</h3>
+            <ul>
+              <li>用 <code>extends</code> 建立父类 / 子类关系；</li>
+              <li>解释“共享成员只定义一次”带来的好处；</li>
+              <li>理解为什么类文件的加载顺序重要；</li>
+              <li>知道 PHP 只支持单继承，并能判断什么时候不该用继承。</li>
+            </ul>
+          </div>
+
+          <h2 id="ch4-1"><span class="section-num">4.1</span><code>extends</code>：把共同部分抽上去</h2>
+          <p>讲义用 <code>Vehicle</code>、<code>Car</code>、<code>Boat</code> 举例。三种交通工具都有型号、载客数和最高速度；<code>Car</code> 还有车身类型，<code>Boat</code> 还有注册国家。把这些共同成员放在 <code>Vehicle</code> 中，只定义一次：</p>
+          <pre data-lang="PHP" data-title="src/Vehicle.php"><code>&lt;?php
+
+class Vehicle
+{
+    public string $makeModel;
+    public int $numPassengers;
+    public float $topSpeed;
+}</code></pre>
+          <p>子类用 <code>extends</code> 继承它，只写自己特有的属性：</p>
+          <pre data-lang="PHP" data-title="src/Car.php"><code>&lt;?php
+
+class Car extends Vehicle
+{
+    public string $bodyShape;
+}</code></pre>
+          <pre data-lang="PHP" data-title="src/Boat.php"><code>&lt;?php
+
+class Boat extends Vehicle
+{
+    public string $countryOfRegistration;
+}</code></pre>
+          <p>创建 <code>Car</code> 对象后，可以直接访问父类的属性：</p>
+          <pre data-lang="PHP" data-title="public/index.php"><code>&lt;?php
+require_once __DIR__ . '/../src/Vehicle.php';
+require_once __DIR__ . '/../src/Car.php';
+
+$car1 = new Car();
+
+$car1-&gt;bodyShape = 'Sedan';
+$car1-&gt;makeModel = 'Ford Mustang';
+$car1-&gt;numPassengers = 5;
+$car1-&gt;topSpeed = 150;
+
+var_dump($car1);</code></pre>
+          <p><code>var_dump()</code> 会显示对象里一共有四个属性：<code>bodyShape</code> 来自 <code>Car</code>，另外三个来自 <code>Vehicle</code>。这就是“子类自动拥有父类的属性和方法”。</p>
+          <div class="callout">
+            <span class="callout-label">加载顺序</span>
+            <p>所有类文件都必须在主文件中读取，而且顺序重要：<code>Vehicle</code> 必须在 <code>Car</code> 之前被读取，因为 <code>Car extends Vehicle</code>。如果先读 <code>Car.php</code>，PHP 还不认识 <code>Vehicle</code>，就会报 “Class Vehicle not found”。第 7 章的 Composer 自动加载器会彻底解决这个问题。</p>
+          </div>
+
+          <h2 id="ch4-2"><span class="section-num">4.2</span>继承中的构造方法</h2>
+          <p>如果子类没有定义构造方法，创建子类对象时会沿用父类的构造方法。如果子类定义了自己的构造方法，PHP <strong>不会自动调用</strong>父类构造方法，需要显式写 <code>parent::__construct(...)</code>：</p>
+          <pre data-lang="PHP" data-title="调用父类构造方法"><code>class Vehicle
+{
+    public function __construct(protected string $makeModel)
+    {
+    }
+}
+
+class Car extends Vehicle
+{
+    public function __construct(string $makeModel, public string $bodyShape)
+    {
+        parent::__construct($makeModel);
+    }
+}
+
+$car = new Car('Ford Mustang', 'Sedan');</code></pre>
+          <p><code>parent::</code> 是“作用域解析运算符”，表示“去父类里找这个方法”。它和 <code>$this-&gt;</code> 的区别是：<code>$this-&gt;</code> 调用当前类（可能已被重写）的方法，<code>parent::</code> 明确调用父类版本。</p>
+          <p>如果子类构造方法忘了调用 <code>parent::__construct()</code>，父类中依赖构造初始化的属性就可能没有值。PHP 不会替你检查这一点，所以这是继承中最常见的坑之一。</p>
+
+          <h2 id="ch4-3"><span class="section-num">4.3</span>单继承：一个类只能有一个直接父类</h2>
+          <p>PHP 允许一个类有多个子类，但每个类<strong>只能有一个直接父类</strong>。这避免了“这个属性到底从哪条继承线来”的歧义，但也让复杂的类层级更难设计。</p>
+          <div class="diagram">
+            <div class="diagram-inner">
+              <div class="uml-box">
+                <div class="uml-name">Vehicle</div>
+                <div class="uml-section">
+                  <div>makeModel: String</div>
+                  <div>numPassengers: Integer</div>
+                  <div>topSpeed: Float</div>
+                </div>
+              </div>
+              <div class="connector" aria-hidden="true"></div>
+              <div class="uml-row">
+                <div class="uml-col">
+                  <div class="uml-box">
+                    <div class="uml-name">Car</div>
+                    <div class="uml-section"><div>bodyShape: String</div></div>
+                  </div>
+                </div>
+                <div class="uml-col">
+                  <div class="uml-box">
+                    <div class="uml-name">Boat</div>
+                    <div class="uml-section"><div>countryOfRegistration: String</div></div>
+                  </div>
+                  <div class="connector" aria-hidden="true"></div>
+                  <div class="uml-row" style="gap:20px">
+                    <div class="uml-box">
+                      <div class="uml-name">MotorBoat</div>
+                      <div class="uml-section"><div>engineSize: Integer</div></div>
+                    </div>
+                    <div class="uml-box">
+                      <div class="uml-name">SailBoat</div>
+                      <div class="uml-section"><div>numberOfMasts: Integer</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="diagram-caption">层级越深，越要小心设计：子类应该真正“是一种”父类。</p>
+          </div>
+          <p>判断是否该用继承，可以做一个简单的“is-a”测试：</p>
+          <ul>
+            <li><code>Car is a Vehicle</code>？是，合理。</li>
+            <li><code>MotorBoat is a Boat</code>？是，合理。</li>
+            <li><code>Engine is a Car</code>？不是，引擎是汽车的组成部分，应该用<strong>组合</strong>（一个类持有另一个对象），而不是继承。</li>
+          </ul>
+          <p>如果两个类只是“有共同代码”，并不存在 is-a 关系，优先考虑组合或抽出一个更准确的共同父类。继承是很强的耦合：父类一改，所有子类都会受影响。</p>
+
+          <div class="takeaway">
+            <h3>本章小结</h3>
+            <ul>
+              <li><code>class Car extends Vehicle</code> 让 Car 自动拥有 Vehicle 的成员。</li>
+              <li>共同成员只写一次，子类只写差异部分。</li>
+              <li>父类文件必须先于子类文件加载。</li>
+              <li>子类自定义构造方法时，记得调用 <code>parent::__construct()</code>。</li>
+              <li>PHP 单继承；继承前先确认 is-a 关系。</li>
+            </ul>
+          </div>
+
+          <div class="details">
+            <details>
+              <summary>小练习：ElectricCar</summary>
+              <div class="details-body">
+                <p>让 <code>ElectricCar</code> 继承 <code>Car</code>，增加 <code>batteryKwh</code> 属性；写一个构造方法接收 <code>makeModel</code>、<code>bodyShape</code>、<code>batteryKwh</code>，并调用父类构造方法。</p>
+                <pre data-lang="PHP" data-title="参考答案"><code>&lt;?php
+
+class ElectricCar extends Car
+{
+    public function __construct(
+        string $makeModel,
+        string $bodyShape,
+        public float $batteryKwh
+    ) {
+        parent::__construct($makeModel, $bodyShape);
+    }
+}</code></pre>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch5" class="chapter">
+        <header class="chapter-cover" data-number="05">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 05 章</span><span>CH19 · Slides 15–21</span></div>
+            <h2>可见性、抽象类与重写</h2>
+            <p>这一章决定“谁能看见、谁能修改、谁能替换谁”。重点不是语法，而是如何让继承关系保持可预测。</p>
+            <div class="chapter-agenda">对应讲义：<strong>Protected Visibility · Abstract Classes · Override · The Liskov Substitution Principle · The Final keyword</strong></div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>本章目标</h3>
+            <ul>
+              <li>正确使用 <code>protected</code>，理解它与 private 的边界；</li>
+              <li>知道抽象类为什么不能实例化，以及它适合放在继承树的什么位置；</li>
+              <li>重写父类方法，并用 <code>parent::</code> 保留父类行为；</li>
+              <li>用里氏替换原则检查子类是否“真的能替换父类”；</li>
+              <li>知道 <code>final</code> 应该用在哪、不该用在哪。</li>
+            </ul>
+          </div>
+
+          <h2 id="ch5-1"><span class="section-num">5.1</span><code>protected</code>：给继承家族的内部通道</h2>
+          <p><code>protected</code> 的属性或方法，对“类内部”和“继承它的子类”可见，但对项目中的其他代码不可见。它比 public 更严格，比 private 更宽松。</p>
+          <pre data-lang="PHP" data-title="src/Vehicle.php"><code>&lt;?php
+
+class Vehicle
+{
+    protected string $makeModel;
+    private int $numPassengers;
+    private float $topSpeed;
+
+    public function getMakeModel(): string
+    {
+        return $this-&gt;makeModel;
+    }
+
+    public function setMakeModel(string $makeModel): void
+    {
+        $this-&gt;makeModel = $makeModel;
+    }
+
+    public function setNumPassengers(int $numPassengers): void
+    {
+        $this-&gt;numPassengers = $numPassengers;
+    }
+
+    public function setTopSpeed(float $topSpeed): void
+    {
+        $this-&gt;topSpeed = $topSpeed;
+    }
+}</code></pre>
+          <p>子类 <code>Car</code> 可以直接读取 <code>$this-&gt;makeModel</code>，因为它是 protected：</p>
+          <pre data-lang="PHP" data-title="src/Car.php"><code>&lt;?php
+
+class Car extends Vehicle
+{
+    public string $bodyShape;
+
+    public function getMakeModelShape(): string
+    {
+        return "{$this-&gt;makeModel}, {$this-&gt;bodyShape}";
+    }
+}</code></pre>
+          <pre data-lang="PHP" data-title="public/index.php"><code>$car1 = new Car();
+
+$car1-&gt;bodyShape = 'Sedan';
+$car1-&gt;setMakeModel('Ford Mustang');
+$car1-&gt;setNumPassengers(5);
+$car1-&gt;setTopSpeed(150);
+
+print $car1-&gt;getMakeModelShape();</code></pre>
+          <pre class="output" data-lang="Output"><code>Ford Mustang, Sedan</code></pre>
+          <p>如果 <code>$makeModel</code> 是 private，<code>Car</code> 里的 <code>$this-&gt;makeModel</code> 就会触发警告 / 错误，因为它只属于 <code>Vehicle</code> 自己，连子类也不给看。把它改成 protected，子类才能访问。</p>
+
+          <div class="callout">
+            <span class="callout-label">需要澄清的一点</span>
+            <p>讲义说“设为 protected 并不意味着子类可以直接修改它们，仍然要用 getter/setter”。从<strong>设计规范</strong>上这是对的：希望校验和实现细节集中在访问器里。但从<strong>语言机制</strong>上说，protected 属性在子类内部确实可以直接读写。课程建议你仍然通过方法访问，而不是依赖这个口子。</p>
+          </div>
+
+          <h3>UML 中的 protected</h3>
+          <p>UML 用 <code>#</code> 表示 protected。<code>«get/set»</code> 是构造型（stereotype），用来说明这些属性配有访问器。下面的图对应讲义第 16 张幻灯片：</p>
+          <div class="diagram">
+            <div class="diagram-inner">
+              <div class="uml-box">
+                <div class="uml-name">Vehicle</div>
+                <div class="uml-section">
+                  <div><span class="stereo">«get/set»</span> #makeModel: String</div>
+                  <div><span class="stereo">«get/set»</span> -numPassengers: Integer</div>
+                  <div><span class="stereo">«get/set»</span> -topSpeed: Float</div>
+                </div>
+              </div>
+              <div class="connector" aria-hidden="true"></div>
+              <div class="uml-row">
+                <div class="uml-col">
+                  <div class="uml-box">
+                    <div class="uml-name">Car</div>
+                    <div class="uml-section">
+                      <div>+bodyShape: String</div>
+                      <div>+getMakeModelShape(): String</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="uml-col">
+                  <div class="uml-box">
+                    <div class="uml-name">Boat</div>
+                    <div class="uml-section"><div>+countryOfRegistration: String</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h2 id="ch5-2"><span class="section-num">5.2</span>抽象类：只为被继承而存在</h2>
+          <p><strong>抽象类</strong>表示一个不完整的、概念性的父类。它不能被直接实例化，只负责把共同成员提供给子类。讲义中的 <code>Vehicle</code> 就是抽象类：现实项目里不会有一个“纯交通工具”，只会具体到汽车、船、飞机。</p>
+          <pre data-lang="PHP" data-title="src/Vehicle.php"><code>&lt;?php
+
+abstract class Vehicle
+{
+    protected string $makeModel;
+    private int $numPassengers;
+    private float $topSpeed;
+
+    public function getMakeModel(): string
+    {
+        return $this-&gt;makeModel;
+    }
+
+    public function setMakeModel(string $makeModel): void
+    {
+        $this-&gt;makeModel = $makeModel;
+    }
+}</code></pre>
+          <pre data-lang="PHP" data-title="不能直接实例化"><code>$vehicle = new Vehicle();   // Fatal error:
+                            // Cannot instantiate abstract class Vehicle</code></pre>
+          <p>抽象类还可以声明<strong>静态成员</strong>，用来表示“属于整个类而不是某个对象”的数据或工具方法。例如：</p>
+          <pre data-lang="PHP" data-title="静态成员示例"><code>abstract class Vehicle
+{
+    protected static int $count = 0;
+
+    public static function count(): int
+    {
+        return self::$count;
+    }
+}</code></pre>
+          <p>此外，抽象类可以声明<strong>抽象方法</strong>：只写签名，不写实现，强制子类必须实现。这相当于一份“合同”：</p>
+          <pre data-lang="PHP" data-title="抽象方法"><code>abstract class Vehicle
+{
+    abstract public function maxSpeed(): float;
+}
+
+class Car extends Vehicle
+{
+    public function maxSpeed(): float
+    {
+        return 240.0;
+    }
+}</code></pre>
+          <p>讲义强调：应该用 <code>abstract</code> 关键字明确表达一个类的用途。它不是为了“少写代码”，而是为了告诉读者：这个类不能单独使用，必须被具体子类补全。</p>
+
+          <h2 id="ch5-3"><span class="section-num">5.3</span>重写（Override）：子类给出自己的版本</h2>
+          <p>重写就是：在子类中定义一个与父类<strong>同名</strong>的方法，从而替换继承来的行为。讲义用 <code>Food</code> 和 <code>Dessert</code> 演示：父类的 <code>__toString()</code> 输出 “(FOOD) 名称”，子类则输出 “I am a Dessert...”。</p>
+          <pre data-lang="PHP" data-title="src/Food.php"><code>&lt;?php
+
+class Food
+{
+    protected string $name;
+
+    public function __construct(string $name)
+    {
+        $this-&gt;name = $name;
+    }
+
+    public function __toString(): string
+    {
+        return "(FOOD) {$this-&gt;name}";
+    }
+}</code></pre>
+          <pre data-lang="PHP" data-title="src/Dessert.php"><code>&lt;?php
+
+class Dessert extends Food
+{
+    public function __toString(): string
+    {
+        $message = parent::__toString();
+        $message .= " I am a Dessert!";
+        return $message;
+    }
+}</code></pre>
+          <pre data-lang="PHP" data-title="使用"><code>$dessert = new Dessert('Tiramisu');
+print $dessert;</code></pre>
+          <pre class="output" data-lang="Output"><code>(FOOD) Tiramisu I am a Dessert!</code></pre>
+          <p><code>parent::__toString()</code> 先执行父类版本，拿到 “(FOOD) Tiramisu”；然后 <code>.=</code> 把子类自己的文字追加进去。这样既保留了父类的输出格式，又加上了子类的差异，称为“增强继承行为”（augmenting inherited behavior）。</p>
+          <p>如果子类完全不想保留父类行为，也可以直接返回自己的字符串。但多数情况下，<code>parent::</code> 能避免重复实现共同部分。注意：<code>parent::</code> 只能调用父类方法，不能访问父类的 private 属性。</p>
+
+          <h2 id="ch5-4"><span class="section-num">5.4</span>里氏替换原则（LSP）</h2>
+          <p><strong>里氏替换原则</strong>（Liskov Substitution Principle，LSP）说的是：</p>
+          <div class="callout callout--blue">
+            <span class="callout-label">定义</span>
+            <p>如果 <code>Dessert</code> 是 <code>Food</code> 的子类，那么任何使用 <code>Food</code> 的地方，都应该能够换成 <code>Dessert</code>，而不会产生意外行为。</p>
+          </div>
+          <p>换句话说，子类不只是“名字上属于父类”，还要在<strong>行为契约</strong>上真正可替换。父类承诺“输入什么、返回什么、抛出什么”，子类不能偷偷把承诺改得更苛刻。</p>
+          <p>讲义列出了四种<strong>允许</strong>的签名变化：</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>变化</th><th>父类</th><th>子类</th><th>为什么安全</th></tr></thead>
+              <tbody>
+                <tr><td>必填参数变可选</td><td><code>validUser(int $minAge)</code></td><td><code>validUser(int $minAge = 18)</code></td><td>调用方仍然可以只传一个参数</td></tr>
+                <tr><td>增加可选参数</td><td><code>validUser(int $minAge)</code></td><td><code>validUser(int $minAge, int $maxAge = 65)</code></td><td>新参数有默认值，旧调用不受影响</td></tr>
+                <tr><td>返回更具体的类型</td><td><code>getRandomFood(): Food</code></td><td><code>getRandomFood(): Dessert</code></td><td>Dessert 也是 Food，调用方仍能当 Food 用（协变）</td></tr>
+                <tr><td>参数类型更宽松</td><td><code>rate(Dessert $d)</code></td><td><code>rate(Food $f)</code></td><td>能接受更多输入，不会拒绝父类原本接受的参数（逆变）</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>协变：返回值更具体</h3>
+          <pre data-lang="PHP" data-title="协变（covariance）"><code>class Food
+{
+}
+
+class Dessert extends Food
+{
+}
+
+class FoodFactory
+{
+    public function getRandomFood(): Food
+    {
+        return new Food();
+    }
+}
+
+class DessertFactory extends FoodFactory
+{
+    public function getRandomFood(): Dessert
+    {
+        return new Dessert();
+    }
+}</code></pre>
+          <p>调用方只知道自己在拿 <code>Food</code>，拿到 <code>Dessert</code> 当然也可以。返回值从宽变窄是安全的，这叫<strong>协变</strong>。</p>
+
+          <h3>逆变：参数更宽松</h3>
+          <pre data-lang="PHP" data-title="逆变（contravariance）"><code>class DessertCritic
+{
+    public function rate(Dessert $dessert): string
+    {
+        return 'Rated a dessert';
+    }
+}
+
+class FoodCritic extends DessertCritic
+{
+    public function rate(Food $food): string
+    {
+        return 'Rated some food';
+    }
+}</code></pre>
+          <p>父类版本只接受 <code>Dessert</code>；子类版本接受更宽的 <code>Food</code>。原本能传给父类的甜点，现在仍然能传，所以安全。参数从窄变宽，叫<strong>逆变</strong>。</p>
+
+          <h3>反例：子类偷偷加要求</h3>
+          <pre data-lang="PHP" data-title="违反 LSP 的签名"><code>class FoodFactory
+{
+    public function make(string $name): Food
+    {
+        return new Food();
+    }
+}
+
+class DessertFactory extends FoodFactory
+{
+    // 新增了一个必填参数：旧调用 make('Tiramisu') 会失败
+    public function make(string $name, string $flavor): Food
+    {
+        return new Food();
+    }
+}</code></pre>
+          <p>这不仅是设计问题，PHP 也会直接报 “Declaration of DessertFactory::make() must be compatible with FoodFactory::make()”。因为子类方法要求调用方多传一个参数，破坏了父类的调用契约。</p>
+          <p>LSP 还包括<strong>行为</strong>层面：子类不能突然抛出父类没有声明的新异常，不能把“成功返回”改成“返回 null”，也不能改变方法语义。PHP 只能检查签名，行为契约需要设计者自己保证。</p>
+
+          <h2 id="ch5-5"><span class="section-num">5.5</span><code>final</code>：到此为止，不要再重写</h2>
+          <p>在方法前加 <code>final</code>，子类就不能重写它：</p>
+          <pre data-lang="PHP" data-title="src/Product.php"><code>class Product
+{
+    protected int $skuId;
+    private string $description;
+
+    public function __construct(int $skuId, string $description)
+    {
+        $this-&gt;skuId = $skuId;
+        $this-&gt;description = $description;
+    }
+
+    final public function setSkuId(int $skuId): void
+    {
+        if ($skuId &gt; 0) {
+            $this-&gt;skuId = $skuId;
+        }
+    }
+}</code></pre>
+          <p>也可以把整个类声明为 <code>final</code>，表示不允许任何子类：</p>
+          <pre data-lang="PHP" data-title="final class"><code>final class ApiResponse
+{
+    // ...
+}</code></pre>
+          <p>讲义建议：<strong>不要轻易把类设为 final</strong>，除非你有明确理由，例如：</p>
+          <ul>
+            <li>这是一个 API 库，你不希望使用者改变已声明的行为；</li>
+            <li>你希望锁定实现，避免版本升级时因子类覆盖而出现意外后果。</li>
+          </ul>
+          <p>对方法使用 <code>final</code> 通常比对整个类使用更常见：你可以允许继承，但禁止改动某个关键算法或安全校验。</p>
+
+          <div class="takeaway">
+            <h3>本章小结</h3>
+            <ul>
+              <li><code>protected</code> 对子类开放，对项目其他代码关闭；设计上仍优先走访问器。</li>
+              <li>抽象类不能实例化，用来放共同成员和强制契约。</li>
+              <li>重写用同名方法；用 <code>parent::</code> 保留父类行为。</li>
+              <li>LSP：子类必须能在不改变预期行为的前提下替换父类。</li>
+              <li><code>final</code> 阻止重写；对类使用要谨慎。</li>
+            </ul>
+          </div>
+
+          <div class="details">
+            <details>
+              <summary>小练习：找出 LSP 问题</summary>
+              <div class="details-body">
+                <p>下面的子类方法为什么不能通过 PHP 的兼容性检查？</p>
+                <pre data-lang="PHP" data-title="题目"><code>class Report
+{
+    public function export(string $format): string
+    {
+        return 'exported as ' . $format;
+    }
+}
+
+class PdfReport extends Report
+{
+    public function export(string $format, bool $compress): string
+    {
+        return 'pdf';
+    }
+}</code></pre>
+                <p><strong>答案：</strong>子类给 <code>export()</code> 增加了一个<strong>必填</strong>参数。父类调用方只需要传 <code>$format</code>，替换成子类后却必须多传 <code>$compress</code>，违反 LSP。若改成 <code>bool $compress = false</code>（带默认值），就符合“增加可选参数”的规则。</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch6" class="chapter">
+        <header class="chapter-cover" data-number="06">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 06 章</span><span>CH20 · Slides 22–24</span></div>
+            <h2>命名空间</h2>
+            <p>当两个库都叫 <code>Shirt</code>，PHP 怎么知道你要哪一个？命名空间给类加上“虚拟目录”，让同名类可以共存。</p>
+            <div class="chapter-agenda">对应讲义：<strong>Object Oriented Web (CH20) · Namespaces</strong></div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>本章目标</h3>
+            <ul>
+              <li>用 <code>namespace</code> 声明类的命名空间；</li>
+              <li>区分完全限定名、<code>use</code> 导入和当前命名空间；</li>
+              <li>理解反斜杠 <code>\</code> 的分隔作用与根命名空间；</li>
+              <li>用别名解决两个同名类的冲突。</li>
+            </ul>
+          </div>
+
+          <h2 id="ch6-1"><span class="section-num">6.1</span>为什么需要命名空间？</h2>
+          <p>假设你的项目里有一个 <code>Shirt</code> 类，第三方库也提供了一个 <code>Shirt</code> 类。如果两者都放在全局空间，PHP 会报 “Cannot declare class Shirt, because the name is already in use”。</p>
+          <p>命名空间（namespace）相当于给类加上一层“虚拟目录”。完整类名由命名空间和类名组成，用反斜杠分隔：</p>
+          <pre data-lang="Text" data-title="完整类名的结构"><code>\MyNamespace\MySubNamespace\MyClass
+└──────┬─────┘└──────┬──────┘└──┬──┘
+    命名空间        子命名空间    类名</code></pre>
+          <p>PHP 内置类（如 <code>DateTime</code>、<code>Exception</code>）位于<strong>根命名空间</strong>，可以用一个反斜杠表示：<code>\DateTime</code>。你自己的类则可以放在任意命名空间下。</p>
+          <p>声明命名空间时，<code>namespace</code> 必须是文件中的第一条 PHP 语句（<code>declare(strict_types=1);</code> 除外）：</p>
+          <pre data-lang="PHP" data-title="src/Shirt.php"><code>&lt;?php
+
+namespace Mattsmithdev;
+
+class Shirt
+{
+    private string $type = 't-shirt';
+
+    public function getType(): string
+    {
+        return $this-&gt;type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this-&gt;type = $type;
+    }
+}</code></pre>
+          <p>这个类的完整名字是 <code>Mattsmithdev\Shirt</code>，而不是 <code>Shirt</code>。命名空间声明只影响当前文件，不会自动影响其他文件。</p>
+
+          <h2 id="ch6-2"><span class="section-num">6.2</span>完全限定名与 <code>use</code></h2>
+          <p>在另一个文件中使用这个类，有两种写法。</p>
+          <h3>写法一：完全限定名</h3>
+          <p>每次写完整名字，并以反斜杠开头，表示“从根命名空间开始找”：</p>
+          <pre data-lang="PHP" data-title="完全限定名"><code>$shirt1 = new \Mattsmithdev\Shirt();
+$shirt2 = new \Mattsmithdev\Shirt();
+
+print "shirt 1 type = {$shirt1-&gt;getType()}";</code></pre>
+          <p>适合只使用一次的情况。名字很长，但意图最明确。</p>
+
+          <h3>写法二：<code>use</code> 导入</h3>
+          <p>在文件顶部用 <code>use</code> 把类导入当前文件，之后就可以直接写短类名：</p>
+          <pre data-lang="PHP" data-title="use 导入"><code>use Mattsmithdev\Shirt;
+
+$shirt1 = new Shirt();
+$shirt2 = new Shirt();
+
+print "shirt 1 type = {$shirt1-&gt;getType()}";</code></pre>
+          <p><code>use</code> 只是编译期的“别名声明”，不会加载文件，也不会创建对象。它告诉 PHP：“本文件中写 <code>Shirt</code> 时，指的是 <code>Mattsmithdev\Shirt</code>。”</p>
+          <p>如果需要同时使用两个同名类，可以用 <code>as</code> 起别名：</p>
+          <pre data-lang="PHP" data-title="别名"><code>use Mattsmithdev\Shirt as BasicShirt;
+use OtherVendor\Shirt as PremiumShirt;
+
+$basic = new BasicShirt();
+$premium = new PremiumShirt();</code></pre>
+
+          <h2 id="ch6-3"><span class="section-num">6.3</span>解析规则：有没有前导反斜杠？</h2>
+          <p>PHP 解析类名时，会根据“有没有前导 <code>\</code>”和“有没有 <code>use</code>”做判断。记住这几条就够了：</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>写法</th><th>PHP 如何理解</th><th>使用场景</th></tr></thead>
+              <tbody>
+                <tr><td><code>new Shirt()</code></td><td>当前命名空间下的 <code>Shirt</code>；如果顶部有 <code>use Mattsmithdev\Shirt</code>，则指导入的类</td><td>当前文件常用写法</td></tr>
+                <tr><td><code>new \Mattsmithdev\Shirt()</code></td><td>从根命名空间开始的完整路径</td><td>只使用一次，或需要消除歧义</td></tr>
+                <tr><td><code>new Sub\Shirt()</code></td><td>当前命名空间下的 <code>Sub\Shirt</code></td><td>当前命名空间的子命名空间</td></tr>
+                <tr><td><code>new \DateTime()</code></td><td>根命名空间中的内置类</td><td>在命名空间内部调用全局类</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout">
+            <span class="callout-label">最常见的错误</span>
+            <p>在声明了 <code>namespace App;</code> 的文件里写 <code>new DateTime()</code>，PHP 会去找 <code>App\DateTime</code>，而不是内置的 <code>\DateTime</code>。要么写 <code>new \DateTime()</code>，要么在顶部 <code>use DateTime;</code>。</p>
+          </div>
+          <p>讲义还提醒：如果只是偶尔用一次另一个命名空间的类，完全限定名就够了；如果要反复使用，<code>use</code> 更简洁，而且不需要每次写前导反斜杠。</p>
+
+          <div class="takeaway">
+            <h3>本章小结</h3>
+            <ul>
+              <li><code>namespace</code> 写在文件最前面，给类加上虚拟目录。</li>
+              <li>反斜杠 <code>\</code> 分隔命名空间和类名；根命名空间用一个 <code>\</code> 表示。</li>
+              <li>完全限定名从 <code>\</code> 开始；<code>use</code> 导入后可用短名。</li>
+              <li>没有前导 <code>\</code> 时，PHP 先按当前命名空间解析。</li>
+              <li>同名类可以用 <code>as</code> 起别名。</li>
+            </ul>
+          </div>
+
+          <div class="details">
+            <details>
+              <summary>小练习：两个 Logger</summary>
+              <div class="details-body">
+                <p>假设有 <code>App\Logger</code> 和 <code>Vendor\Logger</code> 两个类。写一段代码，同时导入它们，并分别创建对象。</p>
+                <pre data-lang="PHP" data-title="参考答案"><code>use App\Logger as AppLogger;
+use Vendor\Logger as VendorLogger;
+
+$appLogger = new AppLogger();
+$vendorLogger = new VendorLogger();</code></pre>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch7" class="chapter">
+        <header class="chapter-cover" data-number="07">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 07 章</span><span>CH20 · Slides 25–28</span></div>
+            <h2>Composer 与自动加载</h2>
+            <p>不再为每个类写一行 <code>require_once</code>。Composer 按 PSR-4 规则把命名空间映射到目录，需要哪个类就加载哪个文件。</p>
+            <div class="chapter-agenda">对应讲义：<strong>Composer · Autoloader · Autoloader: adding a library</strong></div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>本章目标</h3>
+            <ul>
+              <li>理解 <code>composer.json</code> 在项目中的位置与作用；</li>
+              <li>写出正确的 PSR-4 命名空间到目录映射；</li>
+              <li>生成 <code>vendor/autoload.php</code> 并在入口文件中引入；</li>
+              <li>用 <code>composer require</code> 安装第三方库并调用；</li>
+              <li>能定位 “Class not found” 这类自动加载问题。</li>
+            </ul>
+          </div>
+
+          <h2 id="ch7-1"><span class="section-num">7.1</span>Composer 到底做什么？</h2>
+          <p>Composer 是 PHP 的命令行依赖管理工具。它主要做两件事：</p>
+          <ul>
+            <li><strong>管理依赖</strong>：记录项目需要哪些第三方包，下载到 <code>vendor/</code>，并锁定版本；</li>
+            <li><strong>生成自动加载器</strong>：根据命名空间规则，生成 <code>vendor/autoload.php</code>，让 PHP 在需要某个类时自动找到对应文件。</li>
+          </ul>
+          <p>项目根目录必须有一个 <code>composer.json</code>，它记录命名空间、类文件位置、依赖包和可选的命令行脚本。Laravel 等框架也使用 Composer。</p>
+          <pre data-lang="Text" data-title="典型项目结构"><code>my-project/
+├── composer.json
+├── composer.lock          # 首次安装后生成，锁定精确版本
+├── public/
+│   └── index.php          # 前端控制器
+├── src/
+│   └── Shirt.php
+└── vendor/                # Composer 生成，不要手改
+    ├── autoload.php
+    └── composer/</code></pre>
+
+          <h2 id="ch7-2"><span class="section-num">7.2</span>PSR-4：命名空间就是目录</h2>
+          <p>PSR-4 是 PHP 社区推荐的自动加载规范。核心思想很简单：<strong>命名空间前缀映射到一个基础目录，子命名空间对应子目录，类名对应文件名</strong>。</p>
+          <p>在 <code>composer.json</code> 中写：</p>
+          <pre data-lang="JSON" data-title="composer.json"><code>{
+    "autoload": {
+        "psr-4": {
+            "Mattsmithdev\\": "src/"
+        }
+    }
+}</code></pre>
+          <p>注意 JSON 中的双反斜杠 <code>\\</code>：JSON 字符串里 <code>\</code> 是转义字符，所以一个真实的命名空间分隔符要写成两个。映射建立后：</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>完整类名</th><th>Composer 查找的文件</th></tr></thead>
+              <tbody>
+                <tr><td><code>Mattsmithdev\Shirt</code></td><td><code>src/Shirt.php</code></td></tr>
+                <tr><td><code>Mattsmithdev\Shop\Product</code></td><td><code>src/Shop/Product.php</code></td></tr>
+                <tr><td><code>Mattsmithdev\Shop\Food\Dessert</code></td><td><code>src/Shop/Food/Dessert.php</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>因此，类的命名空间必须和目录结构一致，文件名必须和类名一致（包括大小写）。例如 <code>src/Shop/Product.php</code> 里必须声明 <code>namespace Mattsmithdev\Shop;</code>，类名必须是 <code>Product</code>。</p>
+          <div class="callout">
+            <span class="callout-label">常见误区</span>
+            <p>PSR-4 的映射不是“文件路径随便写，Composer 会猜”。它是严格的约定：前缀去掉后，剩余命名空间按 <code>\</code> 拆成目录，最后一段是文件名。少一层目录、大小写不一致，都会导致类找不到。</p>
+          </div>
+
+          <h2 id="ch7-3"><span class="section-num">7.3</span>生成并使用自动加载器</h2>
+          <p>配置好 <code>composer.json</code> 后，在项目根目录运行：</p>
+          <pre data-lang="Terminal" data-title="生成自动加载文件"><code>composer dump-autoload</code></pre>
+          <p>Composer 会创建 <code>vendor/</code> 目录，并生成 <code>vendor/autoload.php</code>。它还会生成 <code>vendor/composer/autoload_psr4.php</code>，把你写的 PSR-4 映射编码进去。每次新增类或修改命名空间映射后，都要重新运行这条命令。</p>
+          <p>在入口文件 <code>public/index.php</code> 中，只需要引入一次自动加载器，然后就可以直接使用类：</p>
+          <pre data-lang="PHP" data-title="public/index.php"><code>&lt;?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Mattsmithdev\Shirt;
+
+$shirt1 = new Shirt();
+$shirt2 = new Shirt();
+
+print "shirt 1 type = {$shirt1-&gt;getType()}";</code></pre>
+          <p>这一行 <code>require_once</code> 取代了之前每个类一行的写法：</p>
+          <pre data-lang="PHP" data-title="不再需要"><code>require_once __DIR__ . '/../src/Shirt.php';
+require_once __DIR__ . '/../src/Product.php';
+require_once __DIR__ . '/../src/Car.php';
+// ...</code></pre>
+          <p>自动加载器只在 PHP 第一次遇到某个未定义的类时，才会按命名空间去查找文件。找到就加载，找不到就报 “Class not found”。它不会预先把所有类都读进来，所以性能更好，也不会受文件加载顺序影响。</p>
+
+          <h2 id="ch7-4"><span class="section-num">7.4</span>引入第三方库</h2>
+          <p>需要新库时，用 <code>composer require</code>。例如安装 MathPHP：</p>
+          <pre data-lang="Terminal" data-title="安装依赖"><code>composer require markrogoyski/math-php</code></pre>
+          <p>Composer 会下载库到 <code>vendor/</code>，更新自动加载器，并把依赖写进 <code>composer.json</code> 的 <code>require</code> 段：</p>
+          <pre data-lang="JSON" data-title="composer.json"><code>{
+    "autoload": {
+        "psr-4": {
+            "Mattsmithdev\\": "src/"
+        }
+    },
+    "require": {
+        "markrogoyski/math-php": "^2.10"
+    }
+}</code></pre>
+          <p><code>markrogoyski</code> 是 vendor 名，<code>math-php</code> 是包名，<strong>它们不是 PHP 命名空间</strong>。它们只是 Composer 用来定位第三方包的标识。真正的类命名空间由包的作者声明，例如 MathPHP 的 <code>MathPHP\Statistics\Average</code>。</p>
+          <pre data-lang="PHP" data-title="使用 MathPHP"><code>&lt;?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use MathPHP\Statistics\Average;
+
+$numbers = [13, 18, 13, 14, 13, 16, 14, 21, 13];
+$numbersString = implode(', ', $numbers);
+$mean = Average::mean($numbers);
+print "average of [ $numbersString ] = $mean";</code></pre>
+          <pre class="output" data-lang="Output"><code>average of [ 13, 18, 13, 14, 13, 16, 14, 21, 13 ] = 15</code></pre>
+          <p>版本号 <code>^2.10</code> 的含义是“允许 2.10 及以上、但小于 3.0 的版本”。这是 Composer 的语义化版本约束，具体规则可以查 Composer 文档。</p>
+
+          <div class="callout callout--quiet">
+            <span class="callout-label">工程习惯</span>
+            <p><code>vendor/</code> 通常不提交到 Git，但 <code>composer.json</code> 和 <code>composer.lock</code> 要提交。新环境拉下代码后运行 <code>composer install</code>，就能按锁文件安装完全相同的依赖版本。</p>
+          </div>
+
+          <h2 id="ch7-5"><span class="section-num">7.5</span>自动加载排错清单</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>症状</th><th>常见原因</th><th>修复</th></tr></thead>
+              <tbody>
+                <tr><td>Class not found</td><td>新增类后没有重新生成自动加载器</td><td>运行 <code>composer dump-autoload</code></td></tr>
+                <tr><td>Class not found</td><td>命名空间与目录不一致</td><td>检查 <code>namespace</code> 与 PSR-4 映射</td></tr>
+                <tr><td>Class not found</td><td>文件名大小写不一致</td><td>让文件名与类名完全一致</td></tr>
+                <tr><td>Class not found</td><td><code>vendor/autoload.php</code> 路径错误</td><td>用 <code>__DIR__</code> 写相对路径</td></tr>
+                <tr><td>Composer 命令找不到</td><td>未安装或不在 PATH</td><td>安装 Composer，或使用完整路径</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="takeaway">
+            <h3>本章小结</h3>
+            <ul>
+              <li><code>composer.json</code> 放在项目根目录，记录 PSR-4 映射和依赖。</li>
+              <li>PSR-4：命名空间前缀 → 目录；子命名空间 → 子目录。</li>
+              <li><code>composer dump-autoload</code> 生成 <code>vendor/autoload.php</code>。</li>
+              <li>入口文件引入一次自动加载器，之后按命名空间直接 <code>new</code>。</li>
+              <li>vendor 名 / 包名不是命名空间。</li>
+            </ul>
+          </div>
+
+          <div class="details">
+            <details>
+              <summary>小练习：配置 Acme 命名空间</summary>
+              <div class="details-body">
+                <p>把命名空间 <code>Acme\</code> 映射到 <code>src/</code>，然后创建 <code>Acme\Greeter</code>，提供 <code>greet(string $name): string</code>，在入口文件用自动加载器调用它。</p>
+                <pre data-lang="JSON" data-title="composer.json"><code>{
+    "autoload": {
+        "psr-4": {
+            "Acme\\": "src/"
+        }
+    }
+}</code></pre>
+                <pre data-lang="PHP" data-title="src/Greeter.php"><code>&lt;?php
+
+namespace Acme;
+
+class Greeter
+{
+    public function greet(string $name): string
+    {
+        return "Hello, {$name}!";
+    }
+}</code></pre>
+                <pre data-lang="PHP" data-title="public/index.php"><code>&lt;?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Acme\Greeter;
+
+$greeter = new Greeter();
+print $greeter-&gt;greet('Ada');</code></pre>
+                <pre data-lang="Terminal" data-title="运行"><code>composer dump-autoload
+php public/index.php</code></pre>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch8" class="chapter">
+        <header class="chapter-cover" data-number="08">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 08 章</span><span>综合实战</span></div>
+            <h2>一个可自动加载的小商店</h2>
+            <p>把本讲的五件事放进同一个项目：抽象类、继承、重写、命名空间、Composer 自动加载。</p>
+            <div class="chapter-agenda">预计用时：30–45 分钟 · 需要 PHP 8+ 与 Composer</div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <div class="objectives">
+            <h3>项目目标</h3>
+            <ul>
+              <li>建立 <code>Shop</code> 命名空间和 PSR-4 目录结构；</li>
+              <li>让 <code>Food</code> 继承抽象类 <code>Product</code>，<code>Dessert</code> 再继承 <code>Food</code>；</li>
+              <li>分别重写 <code>__toString()</code>，用 <code>parent::</code> 复用父类输出；</li>
+              <li>在入口文件只引入 <code>vendor/autoload.php</code>，循环输出商品清单。</li>
+            </ul>
+          </div>
+
+          <h2 id="ch8-1"><span class="section-num">8.1</span>项目结构</h2>
+          <div class="file-tree"><span class="dir">shop/</span>
+├── <span class="file">composer.json</span>
+├── <span class="dir">public/</span>
+│   └── <span class="file">index.php</span>
+└── <span class="dir">src/</span>
+    ├── <span class="file">Product.php</span>
+    ├── <span class="file">Food.php</span>
+    └── <span class="file">Dessert.php</span></div>
+          <p>先在 <code>shop/</code> 目录中创建结构，然后写 <code>composer.json</code>：</p>
+          <pre data-lang="JSON" data-title="composer.json"><code>{
+    "autoload": {
+        "psr-4": {
+            "Shop\\": "src/"
+        }
+    }
+}</code></pre>
+          <p>这里的映射表示：<code>Shop\Product</code> → <code>src/Product.php</code>，<code>Shop\Food</code> → <code>src/Food.php</code>，依此类推。之后每个类文件的第一条语句都写 <code>namespace Shop;</code>。</p>
+
+          <h2 id="ch8-2"><span class="section-num">8.2</span>抽象父类 Product</h2>
+          <p><code>Product</code> 负责保存名称和价格，并规定所有商品都必须能转换成一个用于显示的字符串。它自己不完整，所以声明为 <code>abstract</code>。</p>
+          <pre data-lang="PHP" data-title="src/Product.php"><code>&lt;?php
+
+namespace Shop;
+
+abstract class Product
+{
+    public function __construct(
+        protected string $name,
+        protected float $price
+    ) {
+    }
+
+    public function getName(): string
+    {
+        return $this-&gt;name;
+    }
+
+    public function getPrice(): float
+    {
+        return $this-&gt;price;
+    }
+
+    public function __toString(): string
+    {
+        return sprintf('%s ($%.2f)', $this-&gt;name, $this-&gt;price);
+    }
+}</code></pre>
+          <p>属性提升让构造函数很简洁；<code>protected</code> 让子类可以使用这两个属性，但项目外部只能通过 getter 读取。构造函数没有做价格校验，作为练习，你可以把它改成“价格必须大于 0”。</p>
+
+          <h2 id="ch8-3"><span class="section-num">8.3</span>Food：在父类输出上追加信息</h2>
+          <pre data-lang="PHP" data-title="src/Food.php"><code>&lt;?php
+
+namespace Shop;
+
+class Food extends Product
+{
+    public function __construct(
+        string $name,
+        float $price,
+        private string $expiryDate
+    ) {
+        parent::__construct($name, $price);
+    }
+
+    public function __toString(): string
+    {
+        return parent::__toString() . " [expires {$this-&gt;expiryDate}]";
+    }
+}</code></pre>
+          <p><code>Food</code> 新增了保质期属性，并在构造方法里调用 <code>parent::__construct($name, $price)</code>，把共同部分交给父类。重写 <code>__toString()</code> 时，先拿到父类的 <code>Sourdough ($6.50)</code>，再追加保质期。</p>
+
+          <h2 id="ch8-4"><span class="section-num">8.4</span>Dessert：在 Food 之上再加一层</h2>
+          <pre data-lang="PHP" data-title="src/Dessert.php"><code>&lt;?php
+
+namespace Shop;
+
+class Dessert extends Food
+{
+    public function __toString(): string
+    {
+        return 'Dessert: ' . parent::__toString();
+    }
+}</code></pre>
+          <p>这里演示了两层继承：<code>Product → Food → Dessert</code>。<code>Dessert</code> 没有自己的构造方法，因此沿用 <code>Food</code> 的构造方法。调用 <code>parent::__toString()</code> 会先执行 <code>Food</code> 的版本，而 <code>Food</code> 又会执行 <code>Product</code> 的版本，形成一条链。</p>
+
+          <h2 id="ch8-5"><span class="section-num">8.5</span>入口文件：只引入自动加载器</h2>
+          <pre data-lang="PHP" data-title="public/index.php"><code>&lt;?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Shop\Dessert;
+use Shop\Food;
+
+$items = [
+    new Food('Sourdough', 6.50, '2026-11-01'),
+    new Dessert('Tiramisu', 8.75, '2026-10-30'),
+];
+
+foreach ($items as $item) {
+    print $item . PHP_EOL;
+}</code></pre>
+          <p>注意这里没有任何 <code>require_once</code> 指向 <code>Product.php</code>、<code>Food.php</code> 或 <code>Dessert.php</code>。Composer 的自动加载器会根据对象的完整类名去 <code>src/</code> 下找文件。</p>
+
+          <h2 id="ch8-6"><span class="section-num">8.6</span>运行</h2>
+          <pre data-lang="Terminal" data-title="在 shop/ 目录中执行"><code>composer dump-autoload
+php public/index.php</code></pre>
+          <p>预期输出：</p>
+          <pre class="output" data-lang="Output"><code>Sourdough ($6.50) [expires 2026-11-01]
+Dessert: Tiramisu ($8.75) [expires 2026-10-30]</code></pre>
+          <p>如果在浏览器中通过 Web 服务器访问 <code>public/index.php</code>，建议用 <code>&lt;br&gt;</code> 或 <code>&lt;pre&gt;</code> 控制换行；命令行运行时 <code>PHP_EOL</code> 就够了。</p>
+
+          <h2 id="ch8-7"><span class="section-num">8.7</span>这个项目用到了什么？</h2>
+          <div class="card-grid">
+            <div class="card">
+              <span class="card-kicker">抽象类</span>
+              <h4>Product</h4>
+              <p>不能直接 <code>new Product()</code>，只能通过 Food / Dessert 使用共同实现。</p>
+            </div>
+            <div class="card">
+              <span class="card-kicker">继承</span>
+              <h4>extends</h4>
+              <p>Food 继承 Product，Dessert 继承 Food；共同属性和方法只写一次。</p>
+            </div>
+            <div class="card">
+              <span class="card-kicker">重写</span>
+              <h4>__toString()</h4>
+              <p>每一层都加上自己的信息，并用 <code>parent::</code> 调用上一层。</p>
+            </div>
+            <div class="card">
+              <span class="card-kicker">命名空间</span>
+              <h4>namespace Shop</h4>
+              <p>所有类都在 Shop 命名空间下，避免与第三方同名类冲突。</p>
+            </div>
+            <div class="card">
+              <span class="card-kicker">自动加载</span>
+              <h4>PSR-4</h4>
+              <p><code>Shop\</code> 映射到 <code>src/</code>，入口只引入 <code>vendor/autoload.php</code>。</p>
+            </div>
+            <div class="card">
+              <span class="card-kicker">封装</span>
+              <h4>protected + getter</h4>
+              <p>子类能复用属性，外部通过 getName / getPrice 读取。</p>
+            </div>
+          </div>
+
+          <div class="takeaway">
+            <h3>继续挑战</h3>
+            <ul>
+              <li>给 <code>Product</code> 增加抽象方法 <code>category(): string</code>，让 Food 和 Dessert 分别实现。</li>
+              <li>把价格校验放进构造函数，价格 ≤ 0 时抛出 <code>InvalidArgumentException</code>。</li>
+              <li>增加 <code>Beverage</code> 类，继承 Product，并重写 <code>__toString()</code>。</li>
+              <li>把 <code>Shop\</code> 改成 <code>Acme\Shop\</code>，观察目录需要怎样变化。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch9" class="chapter">
+        <header class="chapter-cover" data-number="09">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 09 章</span><span>调试</span></div>
+            <h2>常见错误与排查顺序</h2>
+            <p>PHP 的报错信息通常很直接。先读第一行，再按“文件 → 命名空间 → 自动加载 → 权限”的顺序定位，比盲目改代码更快。</p>
+            <div class="chapter-agenda">建议把这一章当作项目检查清单</div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <h2 id="ch9-1">9.1 错误速查表</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>报错 / 症状</th><th>常见原因</th><th>修复方式</th></tr></thead>
+              <tbody>
+                <tr><td><code>Cannot access private property</code></td><td>在类外部直接读写 private 属性</td><td>改用 getter / setter，或把属性改为合适的可见性</td></tr>
+                <tr><td><code>Cannot instantiate abstract class</code></td><td>对抽象类执行 <code>new</code></td><td>实例化具体子类，或去掉 <code>abstract</code>（先想清楚设计）</td></tr>
+                <tr><td><code>Class "X" not found</code></td><td>类文件没引入、命名空间不对、自动加载未更新</td><td>检查 <code>namespace</code>、PSR-4 映射，运行 <code>composer dump-autoload</code></td></tr>
+                <tr><td><code>Declaration of ... must be compatible</code></td><td>子类方法签名比父类更严格，违反 LSP</td><td>放宽参数、增加默认值，或保持返回类型兼容</td></tr>
+                <tr><td><code>Namespace declaration statement has to be the very first statement</code></td><td><code>namespace</code> 前有输出、HTML 或别的语句</td><td>把 <code>&lt;?php</code> 和 <code>namespace</code> 放到文件最前面</td></tr>
+                <tr><td><code>Typed property ... must not be accessed before initialization</code></td><td>属性声明了类型但没有赋值就读取</td><td>在构造方法或声明时给初始值</td></tr>
+                <tr><td><code>__toString() must return a string value</code></td><td>魔术方法返回了数组、对象或 null</td><td>确保所有分支都返回字符串</td></tr>
+                <tr><td><code>syntax error, unexpected ...</code></td><td>少分号、括号不匹配、拼写错误</td><td>看报错行号及其上一行，使用编辑器的括号匹配</td></tr>
+                <tr><td>页面空白，没有报错</td><td><code>display_errors</code> 关闭，或代码没执行到</td><td>打开错误显示，检查入口文件与路径</td></tr>
+                <tr><td>Composer 安装成功但仍找不到类</td><td>修改了 <code>composer.json</code> 但没重新生成 autoload</td><td>再次运行 <code>composer dump-autoload</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="ch9-2">9.2 推荐的排查顺序</h2>
+          <ol class="steps">
+            <li><strong>先看完整报错</strong><p>注意文件名、行号和错误类型。不要只看最后一行；第一行通常才是根因。</p></li>
+            <li><strong>确认文件真的被加载</strong><p>在入口文件临时 <code>var_dump(__DIR__);</code>，确认相对路径没有跑偏。自动加载项目先确认 <code>vendor/autoload.php</code> 存在。</p></li>
+            <li><strong>核对命名空间与路径</strong><p><code>Shop\Food</code> 必须在 <code>src/Food.php</code>，且文件内写 <code>namespace Shop;</code>。大小写必须一致。</p></li>
+            <li><strong>重新生成自动加载器</strong><p>新增类或改了映射后，运行 <code>composer dump-autoload</code>。这是“Class not found”的第一嫌疑人。</p></li>
+            <li><strong>检查可见性</strong><p>外部代码访问 private / protected 属性会失败。问自己：这个访问应该由谁负责？通常答案是类自己的方法。</p></li>
+            <li><strong>最后才怀疑 PHP 版本</strong><p>类型化属性需要 7.4+，构造器属性提升需要 8.0+。用 <code>php -v</code> 确认。</p></li>
+          </ol>
+
+          <div class="callout callout--blue">
+            <span class="callout-label">开发环境建议</span>
+            <p>在本地开发时打开 <code>display_errors</code> 和 <code>error_reporting(E_ALL)</code>，让问题尽早暴露；生产环境则应该记录日志而不是把详细错误显示给用户。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="ch10" class="chapter">
+        <header class="chapter-cover" data-number="10">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">第 10 章</span><span>练习</span></div>
+            <h2>练习与参考答案</h2>
+            <p>先自己写，再展开答案。每道题都对应本讲的一个核心概念；能独立完成，说明你已经不只“看懂”，而是“会用”。</p>
+            <div class="chapter-agenda">建议：至少完成前 4 题，再挑战第 5 题</div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <h2 id="ch10-1">练习 1：封装一个 Product</h2>
+          <p>要求：private 属性 <code>name</code>、<code>price</code>；构造方法接收两个参数；<code>setPrice()</code> 拒绝负数；<code>__toString()</code> 输出 <code>Product: 名称, 价格</code>。</p>
+          <div class="details answer">
+            <details>
+              <summary>查看参考答案</summary>
+              <div class="details-body">
+                <pre data-lang="PHP" data-title="Product.php"><code>&lt;?php
+
+class Product
+{
+    private string $name;
+    private float $price;
+
+    public function __construct(string $name, float $price)
+    {
+        $this-&gt;name = $name;
+        $this-&gt;setPrice($price);
+    }
+
+    public function getName(): string
+    {
+        return $this-&gt;name;
+    }
+
+    public function getPrice(): float
+    {
+        return $this-&gt;price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        if ($price &gt;= 0) {
+            $this-&gt;price = $price;
+        }
+    }
+
+    public function __toString(): string
+    {
+        return "Product: {$this-&gt;name}, {$this-&gt;price}";
+    }
+}
+
+$product = new Product('Hammer', 9.99);
+print $product;</code></pre>
+              </div>
+            </details>
+          </div>
+
+          <h2 id="ch10-2">练习 2：Vehicle 与 ElectricCar</h2>
+          <p>要求：<code>Vehicle</code> 有 protected 属性 <code>makeModel</code> 和 <code>topSpeed</code>；<code>Car</code> 继承 Vehicle，增加 <code>bodyShape</code>；<code>ElectricCar</code> 继承 Car，增加 <code>batteryKwh</code>。三层构造方法都要正确调用父类。</p>
+          <div class="details answer">
+            <details>
+              <summary>查看参考答案</summary>
+              <div class="details-body">
+                <pre data-lang="PHP" data-title="继承链"><code>&lt;?php
+
+class Vehicle
+{
+    public function __construct(
+        protected string $makeModel,
+        protected float $topSpeed
+    ) {
+    }
+}
+
+class Car extends Vehicle
+{
+    public function __construct(
+        string $makeModel,
+        float $topSpeed,
+        protected string $bodyShape
+    ) {
+        parent::__construct($makeModel, $topSpeed);
+    }
+}
+
+class ElectricCar extends Car
+{
+    public function __construct(
+        string $makeModel,
+        float $topSpeed,
+        string $bodyShape,
+        protected float $batteryKwh
+    ) {
+        parent::__construct($makeModel, $topSpeed, $bodyShape);
+    }
+}
+
+$car = new ElectricCar('Tesla Model 3', 225, 'Sedan', 75);
+var_dump($car);</code></pre>
+              </div>
+            </details>
+          </div>
+
+          <h2 id="ch10-3">练习 3：抽象类 Shape</h2>
+          <p>要求：抽象类 <code>Shape</code> 声明抽象方法 <code>area(): float</code>；<code>Circle</code> 和 <code>Rectangle</code> 继承并实现；在入口文件用多态循环输出面积。</p>
+          <div class="details answer">
+            <details>
+              <summary>查看参考答案</summary>
+              <div class="details-body">
+                <pre data-lang="PHP" data-title="Shape.php"><code>&lt;?php
+
+abstract class Shape
+{
+    abstract public function area(): float;
+}
+
+class Circle extends Shape
+{
+    public function __construct(private float $radius)
+    {
+    }
+
+    public function area(): float
+    {
+        return M_PI * $this-&gt;radius ** 2;
+    }
+}
+
+class Rectangle extends Shape
+{
+    public function __construct(
+        private float $width,
+        private float $height
+    ) {
+    }
+
+    public function area(): float
+    {
+        return $this-&gt;width * $this-&gt;height;
+    }
+}
+
+$shapes = [new Circle(2), new Rectangle(3, 4)];
+
+foreach ($shapes as $shape) {
+    print get_class($shape) . ': ' . round($shape-&gt;area(), 2) . PHP_EOL;
+}</code></pre>
+              </div>
+            </details>
+          </div>
+
+          <h2 id="ch10-4">练习 4：同名类的命名空间</h2>
+          <p>要求：为 <code>App\Logger</code> 和 <code>Vendor\Logger</code> 各写一个最小类，在入口文件中用别名同时导入并创建对象。</p>
+          <div class="details answer">
+            <details>
+              <summary>查看参考答案</summary>
+              <div class="details-body">
+                <pre data-lang="PHP" data-title="入口文件"><code>&lt;?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use App\Logger as AppLogger;
+use Vendor\Logger as VendorLogger;
+
+$appLogger = new AppLogger();
+$vendorLogger = new VendorLogger();
+
+print get_class($appLogger) . PHP_EOL;
+print get_class($vendorLogger) . PHP_EOL;</code></pre>
+                <p>两个类文件分别声明自己的 <code>namespace App;</code> 和 <code>namespace Vendor;</code>，就可以同名共存。</p>
+              </div>
+            </details>
+          </div>
+
+          <h2 id="ch10-5">练习 5：用 Composer 计算平均分</h2>
+          <p>要求：创建 <code>composer.json</code>，安装 <code>markrogoyski/math-php</code>，用 <code>Average::mean()</code> 计算 <code>[80, 92, 75, 88]</code> 的平均分并输出。</p>
+          <div class="details answer">
+            <details>
+              <summary>查看参考答案</summary>
+              <div class="details-body">
+                <pre data-lang="Terminal" data-title="安装与生成"><code>composer require markrogoyski/math-php
+composer dump-autoload</code></pre>
+                <pre data-lang="PHP" data-title="average.php"><code>&lt;?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+use MathPHP\Statistics\Average;
+
+$scores = [80, 92, 75, 88];
+$mean = Average::mean($scores);
+
+print 'Average: ' . $mean;   // Average: 83.75</code></pre>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section id="appendix" class="chapter">
+        <header class="chapter-cover" data-number="A">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">附录</span><span>速查</span></div>
+            <h2>术语、命令与讲义对照</h2>
+            <p>复习时先看这里：把英文术语和 PHP 语法对上号，再回到对应章节查细节。</p>
+            <div class="chapter-agenda">最后更新：2026 · 基于 CSIS 3280 Week 06</div>
+          </div>
+        </header>
+
+        <div class="chapter-body prose">
+          <h2 id="appendix-1">A.1 术语表</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>English</th><th>中文</th><th>一句话解释</th></tr></thead>
+              <tbody>
+                <tr><td>class</td><td>类</td><td>描述一类对象共有的属性和方法的蓝图。</td></tr>
+                <tr><td>object</td><td>对象</td><td>按类创建出来的具体实例。</td></tr>
+                <tr><td>property</td><td>属性</td><td>对象保存的数据，本质是变量。</td></tr>
+                <tr><td>method</td><td>方法</td><td>对象能执行的操作，本质是函数。</td></tr>
+                <tr><td>instantiate</td><td>实例化</td><td>用 <code>new</code> 创建对象。</td></tr>
+                <tr><td>visibility</td><td>可见性</td><td>public / protected / private，控制谁能访问。</td></tr>
+                <tr><td>accessor</td><td>访问器</td><td>getter 和 setter 的统称。</td></tr>
+                <tr><td>constructor</td><td>构造方法</td><td><code>__construct()</code>，创建对象时自动运行。</td></tr>
+                <tr><td>magic method</td><td>魔术方法</td><td>以 <code>__</code> 开头、由 PHP 在特定时机调用的方法。</td></tr>
+                <tr><td>inheritance</td><td>继承</td><td>子类自动获得父类的属性和方法。</td></tr>
+                <tr><td>superclass</td><td>父类 / 超类</td><td>被继承的类。</td></tr>
+                <tr><td>subclass</td><td>子类</td><td>继承别人的类。</td></tr>
+                <tr><td>override</td><td>重写</td><td>子类定义与父类同名的方法，替换其行为。</td></tr>
+                <tr><td>abstract</td><td>抽象</td><td>不能实例化，只能被继承。</td></tr>
+                <tr><td>final</td><td>最终</td><td>禁止重写方法或继承类。</td></tr>
+                <tr><td>namespace</td><td>命名空间</td><td>类的虚拟目录，用来避免重名。</td></tr>
+                <tr><td>fully qualified name</td><td>完全限定名</td><td>以 <code>\</code> 开头的完整类名。</td></tr>
+                <tr><td>autoloader</td><td>自动加载器</td><td>需要类时自动找到并引入文件。</td></tr>
+                <tr><td>dependency</td><td>依赖</td><td>项目运行所需要的外部包。</td></tr>
+                <tr><td>covariance</td><td>协变</td><td>子类返回值可以更具体。</td></tr>
+                <tr><td>contravariance</td><td>逆变</td><td>子类参数类型可以更宽松。</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="appendix-2">A.2 命令速查</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>命令</th><th>用途</th></tr></thead>
+              <tbody>
+                <tr><td><code>php -v</code></td><td>查看 PHP 版本</td></tr>
+                <tr><td><code>composer -V</code></td><td>查看 Composer 版本</td></tr>
+                <tr><td><code>composer dump-autoload</code></td><td>按 <code>composer.json</code> 重新生成自动加载器</td></tr>
+                <tr><td><code>composer require vendor/package</code></td><td>安装第三方库，并写入依赖</td></tr>
+                <tr><td><code>composer install</code></td><td>按 <code>composer.lock</code> 安装项目依赖</td></tr>
+                <tr><td><code>php public/index.php</code></td><td>运行入口脚本</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="appendix-3">A.3 讲义对照</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>幻灯片</th><th>内容</th><th>对应章节</th></tr></thead>
+              <tbody>
+                <tr><td>1–3</td><td>标题、议程、CH18 分隔页</td><td>开始之前 / 第 1 章</td></tr>
+                <tr><td>4–10</td><td>Classes and Objects (CH18)</td><td>第 1–3 章</td></tr>
+                <tr><td>11–21</td><td>Subclasses and Inheritance (CH19)</td><td>第 4–5 章</td></tr>
+                <tr><td>22–28</td><td>Namespaces / Object Oriented Web (CH20)</td><td>第 6–8 章</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h2 id="appendix-4">A.4 来源与版权</h2>
+          <p>本教程基于 <strong>CSIS 3280: Lecture 6</strong>（28 张幻灯片）整理。英文教材页逐字保留讲义原文；中文页负责讲解、补充示例与练习。讲义中的代码截图已转录为可复制文本，UML 图按原图重绘。</p>
+          <div class="callout">
+            <span class="callout-label">原始版权声明</span>
+            <p>© Copyright Bambang and others. NOT FOR DISTRIBUTION</p>
+          </div>
+          <p class="small">本页仅供个人学习使用。讲义内容与版权归原作者所有，请勿分发原始材料。</p>
+
+          <h2 id="appendix-5">A.5 原始幻灯片索引</h2>
+          <p>点击编号即可查看对应的讲义原始页面。英文教材页在每个小节底部也提供了相同的入口。</p>
+          <div class="slide-index" aria-label="原始幻灯片索引">
+            <button type="button" data-lightbox="assets/pages/page-01.png" data-slide="01" aria-label="查看原始幻灯片 01">01</button>
+            <button type="button" data-lightbox="assets/pages/page-02.png" data-slide="02" aria-label="查看原始幻灯片 02">02</button>
+            <button type="button" data-lightbox="assets/pages/page-03.png" data-slide="03" aria-label="查看原始幻灯片 03">03</button>
+            <button type="button" data-lightbox="assets/pages/page-04.png" data-slide="04" aria-label="查看原始幻灯片 04">04</button>
+            <button type="button" data-lightbox="assets/pages/page-05.png" data-slide="05" aria-label="查看原始幻灯片 05">05</button>
+            <button type="button" data-lightbox="assets/pages/page-06.png" data-slide="06" aria-label="查看原始幻灯片 06">06</button>
+            <button type="button" data-lightbox="assets/pages/page-07.png" data-slide="07" aria-label="查看原始幻灯片 07">07</button>
+            <button type="button" data-lightbox="assets/pages/page-08.png" data-slide="08" aria-label="查看原始幻灯片 08">08</button>
+            <button type="button" data-lightbox="assets/pages/page-09.png" data-slide="09" aria-label="查看原始幻灯片 09">09</button>
+            <button type="button" data-lightbox="assets/pages/page-10.png" data-slide="10" aria-label="查看原始幻灯片 10">10</button>
+            <button type="button" data-lightbox="assets/pages/page-11.png" data-slide="11" aria-label="查看原始幻灯片 11">11</button>
+            <button type="button" data-lightbox="assets/pages/page-12.png" data-slide="12" aria-label="查看原始幻灯片 12">12</button>
+            <button type="button" data-lightbox="assets/pages/page-13.png" data-slide="13" aria-label="查看原始幻灯片 13">13</button>
+            <button type="button" data-lightbox="assets/pages/page-14.png" data-slide="14" aria-label="查看原始幻灯片 14">14</button>
+            <button type="button" data-lightbox="assets/pages/page-15.png" data-slide="15" aria-label="查看原始幻灯片 15">15</button>
+            <button type="button" data-lightbox="assets/pages/page-16.png" data-slide="16" aria-label="查看原始幻灯片 16">16</button>
+            <button type="button" data-lightbox="assets/pages/page-17.png" data-slide="17" aria-label="查看原始幻灯片 17">17</button>
+            <button type="button" data-lightbox="assets/pages/page-18.png" data-slide="18" aria-label="查看原始幻灯片 18">18</button>
+            <button type="button" data-lightbox="assets/pages/page-19.png" data-slide="19" aria-label="查看原始幻灯片 19">19</button>
+            <button type="button" data-lightbox="assets/pages/page-20.png" data-slide="20" aria-label="查看原始幻灯片 20">20</button>
+            <button type="button" data-lightbox="assets/pages/page-21.png" data-slide="21" aria-label="查看原始幻灯片 21">21</button>
+            <button type="button" data-lightbox="assets/pages/page-22.png" data-slide="22" aria-label="查看原始幻灯片 22">22</button>
+            <button type="button" data-lightbox="assets/pages/page-23.png" data-slide="23" aria-label="查看原始幻灯片 23">23</button>
+            <button type="button" data-lightbox="assets/pages/page-24.png" data-slide="24" aria-label="查看原始幻灯片 24">24</button>
+            <button type="button" data-lightbox="assets/pages/page-25.png" data-slide="25" aria-label="查看原始幻灯片 25">25</button>
+            <button type="button" data-lightbox="assets/pages/page-26.png" data-slide="26" aria-label="查看原始幻灯片 26">26</button>
+            <button type="button" data-lightbox="assets/pages/page-27.png" data-slide="27" aria-label="查看原始幻灯片 27">27</button>
+            <button type="button" data-lightbox="assets/pages/page-28.png" data-slide="28" aria-label="查看原始幻灯片 28">28</button>
+          </div>
+          <p class="small">编号与 PDF 页码一致：01–02 封面与议程，03–10 CH18 类与对象，11–21 CH19 继承，22–28 CH20 命名空间与 Composer。</p>
+        </div>
+        <div class="lesson-foot">
+          <a class="source-btn" href="index.html" lang="en" hreflang="en">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            对照英文原版教材
+          </a>
+          <span class="page-ref">教程结束</span>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <p><strong>CSIS 3280 第 6 讲 · PHP 面向对象编程</strong> · 中文网页教程。讲义原文 © Copyright Bambang and others. NOT FOR DISTRIBUTION.</p>
+        <p class="footer-links">
+          <a href="#cover">回到顶部</a>
+          <a href="index.html" lang="en" hreflang="en">English textbook</a>
+          <a href="#appendix-5">原始幻灯片索引</a>
+        </p>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="讲义原始幻灯片">
+  <div class="lightbox-panel">
+    <div class="lightbox-bar">
+      <span id="lightbox-title">原始幻灯片</span>
+      <a class="lightbox-open" id="lightbox-open" href="#" target="_blank" rel="noopener">打开图片</a>
+      <button class="lightbox-close" type="button" aria-label="关闭预览">×</button>
+    </div>
+    <div class="lightbox-img-wrap">
+      <img id="lightbox-img" src="" alt="">
+    </div>
+  </div>
+</div>
+
+<button class="back-top" type="button" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+</button>
+
+<script src="assets/app.js?v=20261027e"></script>
+</body>
+</html>

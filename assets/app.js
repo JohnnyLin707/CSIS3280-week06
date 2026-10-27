@@ -14,6 +14,9 @@
     cross: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     bulb: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9c.4.3.6.7.6 1.2v.9h5.8v-.9c0-.5.2-.9.6-1.2A6 6 0 0012 3z"/></svg>',
     file: '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/></svg>',
+    book: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
+    pencil: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4Z"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
     code: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l-6-6 6-6M15 6l6 6-6 6"/></svg>',
     arrowLeft: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>',
     arrowRight: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
@@ -29,6 +32,7 @@
   });
 
   var els = {
+    shell: document.querySelector('.shell'),
     sidebar: document.getElementById('sidebar'),
     workspace: document.getElementById('workspace'),
     progressFill: document.getElementById('progressFill'),
@@ -548,6 +552,128 @@
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
+  /* ------------------------------ 主页 ------------------------------ */
+
+  var LECTURE = {
+    en: 'lecture06/index.html',
+    zh: 'lecture06/zh.html',
+    chapters: [
+      { id: 'ch18', num: 'CH18', en: 'Classes and Objects', zh: '类与对象：属性声明、封装、构造方法、__toString' },
+      { id: 'ch19', num: 'CH19', en: 'Subclasses and Inheritance', zh: '继承：extends、protected、抽象类、重写与方法增强' },
+      { id: 'ch20', num: 'CH20', en: 'Namespaces & Composer', zh: '命名空间、Composer 与自动加载' }
+    ],
+    zhChapters: [
+      { id: 'ch1', t: '类与对象' },
+      { id: 'ch2', t: '封装与访问器' },
+      { id: 'ch3', t: '构造方法与魔术方法' },
+      { id: 'ch4', t: '继承与子类' },
+      { id: 'ch5', t: '可见性、抽象类与重写' },
+      { id: 'ch7', t: 'Composer 与自动加载' },
+      { id: 'ch10', t: '练习与答案' }
+    ]
+  };
+
+  var currentView = null;
+
+  function hasProgress() {
+    var anyDraft = flat.some(function (q) {
+      var d = state.drafts[q.id] || {};
+      return Object.keys(d).some(function (k) { return String(d[k] || '').trim().length > 0; });
+    });
+    return anyDraft || flat.some(function (q) { return !!state.done[q.id]; });
+  }
+
+  function renderHome() {
+    var started = hasProgress();
+    var done = flat.filter(function (q) { return !!state.done[q.id]; }).length;
+    var practiceLabel = started
+      ? '继续练习 · 第 ' + (current + 1) + ' 题'
+      : '开始代码填空练习';
+
+    var chapterCards = LECTURE.chapters.map(function (c) {
+      return '<a class="chapter-card" href="' + LECTURE.en + '#' + c.id + '" target="_blank" rel="noopener">' +
+        '<span class="cc-num">' + c.num + '</span>' +
+        '<strong>' + escapeHtml(c.en) + '</strong>' +
+        '<span class="cc-zh">' + escapeHtml(c.zh) + '</span>' +
+        '<span class="cc-go">打开章节' + ICON.arrow + '</span>' +
+        '</a>';
+    }).join('');
+
+    var zhPills = LECTURE.zhChapters.map(function (c) {
+      return '<a class="zh-pill" href="' + LECTURE.zh + '#' + c.id + '" target="_blank" rel="noopener">' + escapeHtml(c.t) + '</a>';
+    }).join('');
+
+    var qChips = flat.map(function (q) {
+      var isDone = !!state.done[q.id];
+      return '<a class="q-chip' + (isDone ? ' is-done' : '') + '" href="#practice" data-jump="' + q.index + '">' +
+        '<span class="q-num">' + (q.index + 1) + '</span>' +
+        '<span class="q-chip-title">' + escapeHtml(q.title) + '</span>' +
+        '<small>' + escapeHtml(q.chapter.title) + (isDone ? ' · 已完成' : '') + '</small>' +
+        '</a>';
+    }).join('');
+
+    els.workspace.innerHTML = '' +
+      '<section class="home">' +
+        '<div class="hero">' +
+          '<p class="hero-eyebrow">CSIS 3280 · Backend Web Development · Week 06</p>' +
+          '<h1>Week 06 学习中心<span class="thin">PHP 面向对象：先读 Lecture 06 教材，再做代码填空练习</span></h1>' +
+          '<p class="hero-lead">CH18 类与对象 · CH19 继承与子类 · CH20 命名空间与 Composer。讲义的网页教材版与 9 道填空练习都整合在这一页。</p>' +
+          '<div class="hero-actions">' +
+            '<a class="btn btn-primary btn-lg" href="#practice">' + ICON.pencil + escapeHtml(practiceLabel) + '</a>' +
+            '<a class="btn btn-ghost btn-lg" href="' + LECTURE.en + '" target="_blank" rel="noopener">' + ICON.book + 'Lecture 06 教材（英文）</a>' +
+            '<a class="btn btn-ghost btn-lg" href="' + LECTURE.zh + '" target="_blank" rel="noopener">' + ICON.book + '中文教程</a>' +
+          '</div>' +
+          '<div class="hero-stats">' +
+            '<div class="hero-stat"><strong>' + flat.length + '</strong><span>填空练习题</span></div>' +
+            '<div class="hero-stat"><strong>' + done + ' / ' + flat.length + '</strong><span>已完成</span></div>' +
+            '<div class="hero-stat"><strong>28</strong><span>讲义幻灯片</span></div>' +
+            '<div class="hero-stat"><strong>23</strong><span>英文课程小节</span></div>' +
+            '<div class="hero-stat"><strong>10</strong><span>中文教程章节</span></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="path-row">' +
+          '<div class="step"><span class="step-num">1</span><div><strong>读教材</strong><span>Lecture 06 网页教材，理解概念与示例</span></div></div>' +
+          '<span class="path-arrow">' + ICON.arrow + '</span>' +
+          '<div class="step"><span class="step-num">2</span><div><strong>做练习</strong><span>9 道填空，逐空补全 starter 代码</span></div></div>' +
+          '<span class="path-arrow">' + ICON.arrow + '</span>' +
+          '<div class="step"><span class="step-num">3</span><div><strong>校对答案</strong><span>逐空反馈缺失点，可对照参考答案</span></div></div>' +
+        '</div>' +
+
+        '<div class="home-grid">' +
+          '<section class="panel">' +
+            '<div class="panel-head"><h2>' + ICON.book + 'Lecture 06 教材（网页版）</h2>' +
+            '<a class="panel-more" href="' + LECTURE.en + '" target="_blank" rel="noopener">打开整本教材</a></div>' +
+            '<p class="panel-sub">讲义的 HTML 教科书版本：原文按顺序呈现，图表与代码示例可放大查看，支持深浅色主题与中英文切换。</p>' +
+            '<div class="chapter-cards">' + chapterCards + '</div>' +
+            '<div class="zh-strip"><span class="zh-label">中文教程章节：</span>' + zhPills + '</div>' +
+          '</section>' +
+          '<section class="panel">' +
+            '<div class="panel-head"><h2>' + ICON.pencil + '代码填空练习</h2>' +
+            '<a class="panel-more" href="#practice">进入练习</a></div>' +
+            '<p class="panel-sub">题目取自 <code>week06_starter</code> 的空白代码段，参考答案来自 <code>week06_demo</code>，逐空校验并提示缺失内容。</p>' +
+            '<div class="q-quick">' + qChips + '</div>' +
+          '</section>' +
+        '</div>' +
+      '</section>';
+  }
+
+  function show(view) {
+    if (currentView === view) return;
+    currentView = view;
+    els.shell.classList.toggle('is-home', view === 'home');
+    if (view === 'home') renderHome();
+    else renderQuestion();
+  }
+
+  function route() {
+    var h = location.hash.replace(/^#\/?/, '');
+    var want = h === 'practice' ? 'practice' : (h === 'home' ? 'home' : '');
+    if (!want) want = hasProgress() ? 'practice' : 'home';
+    show(want);
+    window.scrollTo(0, 0);
+  }
+
   /* ------------------------------ 事件绑定 ------------------------------ */
 
   els.sidebar.addEventListener('click', function (e) {
@@ -556,13 +682,26 @@
     go(Number(btn.getAttribute('data-go')));
   });
 
+  els.workspace.addEventListener('click', function (e) {
+    var chip = e.target.closest('[data-jump]');
+    if (!chip) return;
+    e.preventDefault();
+    current = clamp(Number(chip.getAttribute('data-jump')) || 0, 0, flat.length - 1);
+    persist();
+    renderSidebar();
+    updateProgress();
+    if (location.hash === '#practice') show('practice');
+    else location.hash = '#practice';
+  });
+
   els.resetAllBtn.addEventListener('click', function () {
     if (!window.confirm('会清空所有题目的作答与完成记录，确定重置吗？')) return;
     state = { current: current, drafts: {}, done: {} };
     revealed = {};
     persist();
     renderSidebar();
-    renderQuestion();
+    if (currentView === 'home') renderHome();
+    else renderQuestion();
     updateProgress();
   });
 
@@ -580,8 +719,9 @@
 
   /* ------------------------------ 启动 ------------------------------ */
 
+  window.addEventListener('hashchange', route);
   renderSidebar();
-  renderQuestion();
+  route();
   updateProgress();
   persist();
 })();

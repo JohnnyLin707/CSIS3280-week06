@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CSIS 3280: Lecture 6 — HTML Textbook</title>
+<meta name="description" content="A verbatim HTML textbook edition of CSIS 3280 Lecture 6: classes and objects, inheritance, namespaces, Composer and autoloading.">
+<script>
+try {
+  var saved = localStorage.getItem("lecture06-theme");
+  if (saved) document.documentElement.setAttribute("data-theme", saved);
+  else if (window.matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.setAttribute("data-theme", "dark");
+} catch (e) {}
+</script>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css?v=20261027e">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="reading-progress" aria-hidden="true"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">3280</span>
+      <span class="brand-copy">
+        <strong>Backend Web Development</strong>
+        <span>Lecture 6 · Object-Oriented PHP</span>
+      </span>
+    </a>
+    <nav class="header-actions" aria-label="Page controls">
+      <button class="menu-btn" type="button" data-toc-toggle aria-controls="toc" aria-expanded="false" aria-label="Open contents">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <span class="menu-label">Contents</span>
+      </button>
+      <a class="lang-switch" href="zh.html" lang="zh-CN" hreflang="zh-CN">中文教程</a>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="toc-backdrop" aria-hidden="true"></div>
+
+<div class="layout">
+  <aside class="toc" id="toc" aria-label="Table of contents">
+    <span class="toc-label">Contents</span>
+    <ul class="toc-list">
+      <li class="toc-chapter"><span class="num">00</span><a href="#about">About this edition</a></li>
+      <li><a href="#agenda">Notes &amp; Agenda</a></li>
+      <li class="toc-chapter"><span class="num">01</span><a href="#ch18">Classes and Objects</a></li>
+      <li class="toc-sub"><a href="#s04">Classes and object</a></li>
+      <li class="toc-sub"><a href="#s05">Classes and object — UML</a></li>
+      <li class="toc-sub"><a href="#s06">Private properties and accessor methods</a></li>
+      <li class="toc-sub"><a href="#s07">Accessor validation</a></li>
+      <li class="toc-sub"><a href="#s08">Constructor magic method</a></li>
+      <li class="toc-sub"><a href="#s09">__toString and NULL</a></li>
+      <li class="toc-sub"><a href="#s10">Custom method and virtual attributes</a></li>
+      <li class="toc-chapter"><span class="num">02</span><a href="#ch19">Subclasses and Inheritance</a></li>
+      <li class="toc-sub"><a href="#s12">Inheritance and Subclasses</a></li>
+      <li class="toc-sub"><a href="#s13">The extend keyword</a></li>
+      <li class="toc-sub"><a href="#s14">Single inheritance</a></li>
+      <li class="toc-sub"><a href="#s15">Protected Visibility</a></li>
+      <li class="toc-sub"><a href="#s16">Protected Visibility — UML</a></li>
+      <li class="toc-sub"><a href="#s17">Abstract Classes</a></li>
+      <li class="toc-sub"><a href="#s18">Override</a></li>
+      <li class="toc-sub"><a href="#s19">The Liskov Substitution Principle</a></li>
+      <li class="toc-sub"><a href="#s20">Augmenting Inherited Behavior</a></li>
+      <li class="toc-sub"><a href="#s21">The Final keyword</a></li>
+      <li class="toc-chapter"><span class="num">03</span><a href="#ch20">Namespaces</a></li>
+      <li class="toc-sub"><a href="#s23">Namespaces</a></li>
+      <li class="toc-sub"><a href="#s24">Using a namespace</a></li>
+      <li class="toc-sub"><a href="#s25">Composer</a></li>
+      <li class="toc-sub"><a href="#s26">Autoloader</a></li>
+      <li class="toc-sub"><a href="#s27">Creating the autoloader</a></li>
+      <li class="toc-sub"><a href="#s28">Autoloader: adding a library</a></li>
+      <li class="toc-chapter"><span class="num">04</span><a href="#source">Source notes</a></li>
+    </ul>
+    <div class="toc-note">
+      <strong>Verbatim reader</strong>
+      Lecture wording is kept in its original order. Every lesson links to its original slide.
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="reading">
+
+      <section class="cover" id="cover">
+        <div class="cover-grid">
+          <div>
+            <p class="eyebrow">CSIS 3280 · Backend Web Development · Week 06</p>
+            <h1>CSIS 3280<span class="thin">Lecture 6</span></h1>
+            <p class="cover-lead">
+              Classes and Object (CH 18) · Subclasses and Inheritance (CH 19) · Object Oriented Web (CH20)
+            </p>
+            <p class="cover-lead" style="font-size:1rem;margin-top:16px;color:var(--muted)">
+              An HTML textbook edition of the Week 6 lecture slides. The lecture text is reproduced without paraphrase; diagrams and code samples are presented in reading order.
+            </p>
+            <div class="cover-actions">
+              <a class="button button--primary" href="#ch18">
+                Start with CH18
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+              <a class="button button--ghost" href="zh.html" lang="zh-CN" hreflang="zh-CN">阅读中文教程</a>
+            </div>
+            <div class="cover-stats">
+              <div class="cover-stat"><strong>28</strong><span>Source slides</span></div>
+              <div class="cover-stat"><strong>3</strong><span>Chapters</span></div>
+              <div class="cover-stat"><strong>23</strong><span>Lessons</span></div>
+              <div class="cover-stat"><strong>PHP 8</strong><span>Code style</span></div>
+            </div>
+            <p style="margin-top:22px">
+              <button class="source-btn" type="button" data-lightbox="assets/pages/page-01.png" data-slide="01">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+                View original title slide
+              </button>
+            </p>
+          </div>
+          <div class="hero-card" aria-label="Sample PHP class">
+            <div class="hero-card-bar">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+              <span>src/Product.php</span>
+            </div>
+<pre><span class="tok-com">&lt;?php</span>
+
+<span class="tok-key">class</span> <span class="tok-type">Product</span>
+{
+    <span class="tok-key">public</span> <span class="tok-var">string</span> <span class="tok-var">$name</span>;
+    <span class="tok-key">public</span> <span class="tok-var">float</span> <span class="tok-var">$price</span>;
+}
+
+<span class="tok-var">$product1</span> = <span class="tok-key">new</span> <span class="tok-type">Product</span>();
+<span class="tok-var">$product1</span>-&gt;<span class="tok-var">name</span> = <span class="tok-str">'hammer'</span>;</pre>
+            <p class="hero-caption">A class is a blueprint; an object is an instance made from it.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="lesson">
+        <div class="lesson-head">
+          <span class="slide-chip">Reader</span>
+          <div class="lesson-head-main">
+            <h2 style="font-family:var(--font-serif);font-size:clamp(1.8rem,3.4vw,2.4rem)">About this edition</h2>
+            <p class="lesson-deck">How the lecture was turned into an HTML textbook</p>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <p class="lead">This reader follows the Week 6 lecture deck from beginning to end. Slide titles, bullet wording, notes, and terminology are kept as written in the original. Code that appeared as a screenshot has been transcribed into readable, copyable blocks; the original slide remains one click away at the end of every lesson.</p>
+          <div class="callout">
+            <span class="callout-label">Source</span>
+            <p><strong>CSIS 3280: Lecture 6</strong> — 28 slides, covering CH18, CH19, and CH20. The original deck carries this footer on every slide:</p>
+            <p>© Copyright Bambang and others. NOT FOR DISTRIBUTION</p>
+          </div>
+          <div class="card-grid">
+            <div class="card">
+              <span class="card-kicker">Chapter 01</span>
+              <h4>Classes and Objects</h4>
+              <p>Declaring classes, creating objects, accessors, constructors, magic methods, and virtual attributes.</p>
+            </div>
+            <div class="card">
+              <span class="card-kicker">Chapter 02</span>
+              <h4>Subclasses and Inheritance</h4>
+              <p>Extending classes, protected visibility, abstract classes, overriding, LSP, and the final keyword.</p>
+            </div>
+            <div class="card">
+              <span class="card-kicker">Chapter 03</span>
+              <h4>Namespaces and Composer</h4>
+              <p>Namespace resolution, Composer configuration, PSR-4 autoloading, and third-party libraries.</p>
+            </div>
+          </div>
+          <p class="small">Reading conventions: slide numbers mark the original position in the deck; the “Original slide” button opens a full-page image of the source. In code blocks, the label in the header shows the language or file type.</p>
+        </div>
+      </section>
+
+      <section id="agenda" class="lesson">
+        <div class="lesson-head">
+          <span class="slide-chip">Slide 02</span>
+          <div class="lesson-head-main">
+            <h3>Notes &amp; Agenda</h3>
+            <p class="lesson-deck">The lecture roadmap, reproduced from the slide</p>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <ul class="lecture-list">
+            <li>Agenda:
+              <ul>
+                <li>Classes and Object (CH 18)</li>
+                <li>Subclasses and Inheritance (CH 19)</li>
+                <li>Object Oriented Web (CH20)</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="callout callout--quiet">
+            <span class="callout-label">Slide footer</span>
+            <p>© Copyright Bambang and others. NOT FOR DISTRIBUTION</p>
+          </div>
+        </div>
+        <div class="lesson-foot">
+          <button class="source-btn" type="button" data-lightbox="assets/pages/page-02.png" data-slide="02">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+            Original slide 02
+          </button>
+          <span class="page-ref">Slide 2 of 28</span>
+        </div>
+      </section>
+
+      <section id="ch18" class="chapter">
+        <header class="chapter-cover" data-number="01">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">Chapter 01</span><span>CH18</span></div>
+            <h2>Classes and Objects</h2>
+            <p>Declaring classes, creating objects, controlling access to properties, and giving objects useful behaviour through constructors and magic methods.</p>
+            <div class="chapter-agenda">Lecture divider: <strong>Classes and Objects (CH18)</strong></div>
+          </div>
+        </header>
+
+        <article class="lesson" id="s04">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 04</span>
+            <div class="lesson-head-main">
+              <h3>Classes and object</h3>
+              <p class="lesson-deck">What a class declaration establishes, and how an object is created</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li><em>A class declaration</em> defines a class:
+                <ul>
+                  <li>It lays out the properties (variables) each object of that class will have,</li>
+                  <li>as well as the methods (functions) that can act upon those properties.</li>
+                  <li>also establishes any relationship</li>
+                </ul>
+              </li>
+              <li>Class names and class declaration filenames always start with a capital letter
+                <ul>
+                  <li>Class name convention uses PascalCase</li>
+                </ul>
+              </li>
+              <li>PHP keyword <strong>new</strong> is used to create/instantiate an object of a class, e.g., <code>$myObject = new ClassName()</code>
+                <ul>
+                  <li>variable <code>$myObject</code> doesn’t actually contain the object itself, but rather a <em>reference</em> to the object</li>
+                  <li>The <em>object operator</em> (<strong>→</strong>) is used to access properties and methods of that object</li>
+                </ul>
+              </li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="src/Product.php"><code>class Product
+{
+    public string $name;
+    public float $price;
+}</code></pre>
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p>PHP code declaring a class. Notice the capital letter of the class name. The file is also stored in capital letter, i.e., <code>src/Product.php</code></p>
+            </div>
+
+            <pre data-lang="PHP" data-title="main script"><code>require_once __DIR__ . '/../src/Product.php';
+
+$product1 = new Product();
+$product1-&gt;name = 'hammer';
+
+print 'product 1 name = ' . $product1-&gt;name;</code></pre>
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p>PHP code creating an object, and setting its name property.</p>
+              <p>Notice how the arrow object operator is used. And notice that the property name does not need a <code>$</code> sign</p>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-04.png" data-slide="04">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 04
+            </button>
+            <span class="page-ref">Slide 4 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s05">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 05</span>
+            <div class="lesson-head-main">
+              <h3>Classes and object</h3>
+              <p class="lesson-deck">The class diagram, an instance, and the matching PHP code</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <div class="split">
+              <div>
+                <div class="diagram">
+                  <div class="uml-row">
+                    <div class="uml-col">
+                      <div class="uml-box">
+                        <div class="uml-name">Product</div>
+                        <div class="uml-section">
+                          <div>+name: String</div>
+                          <div>+price: Float</div>
+                        </div>
+                      </div>
+                      <p class="diagram-caption">UML diagram of a class</p>
+                    </div>
+                    <div class="uml-col">
+                      <div class="instance-box">
+                        <div class="instance-name"><u>$product1</u>: Product</div>
+                        <div class="instance-body">
+                          <div>name = "hammer"</div>
+                          <div>price = 9.99</div>
+                        </div>
+                      </div>
+                      <p class="diagram-caption">A <code>$product1</code> instance of class Product</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <pre data-lang="PHP" data-title="src/Product.php"><code>class Product
+{
+    public string $name;
+    public float $price;
+}</code></pre>
+                <div class="callout" style="margin-top:14px">
+                  <span class="callout-label">Slide note</span>
+                  <p>PHP code declaring a class. Notice the capital letter of the class name. The file is also stored in capital letter, i.e., <code>src/Product.php</code></p>
+                </div>
+              </div>
+            </div>
+
+            <pre data-lang="PHP" data-title="main script"><code>require_once __DIR__ . '/../src/Product.php';
+
+$product1 = new Product();
+$product1-&gt;name = 'hammer';
+
+print 'product 1 name = ' . $product1-&gt;name;</code></pre>
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p>PHP code creating an object, and setting its name property</p>
+              <p>Notice how the arrow object operator is used. And notice that the property name does not need a $ sign</p>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-05.png" data-slide="05">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 05
+            </button>
+            <span class="page-ref">Slide 5 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s06">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 06</span>
+            <div class="lesson-head-main">
+              <h3>Private properties and accessor methods</h3>
+              <p class="lesson-deck">Using <code>private</code> with getters and setters to enforce validation</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>Declaring a property to be <strong>private</strong> is a good practice to enforce validation
+                <ul>
+                  <li>They need public accessor methods (setter or getter)</li>
+                </ul>
+              </li>
+              <li>The <strong>default visibility</strong> for class members is <strong>public</strong></li>
+              <li>Other visibility is called <strong>protected</strong>, which means that the member is accessible within the ‘family’ inheriting the same parent class</li>
+              <li><strong>Getter</strong> and <strong>Setter</strong> method can be declared as the accessor methods</li>
+            </ul>
+
+            <div class="callout callout--teal">
+              <span class="callout-label">Slide note</span>
+              <p>Notice the use of <strong>this</strong> keyword</p>
+            </div>
+
+            <pre data-lang="PHP" data-title="src/Product.php"><code>class Product
+{
+    private string $name;
+    private float $price;
+
+    public function getName(): string
+    {
+        return $this-&gt;name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this-&gt;name = $name;
+    }
+
+    public function getPrice(): float
+    {
+        return $this-&gt;price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        $this-&gt;price = $price;
+    }
+}</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-06.png" data-slide="06">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 06
+            </button>
+            <span class="page-ref">Slide 6 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s07">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 07</span>
+            <div class="lesson-head-main">
+              <h3>Private properties and accessor methods</h3>
+              <p class="lesson-deck">The setter rejects a negative price before it reaches the property</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p>Assessor method can be used to validate the values assigned to the object properties</p>
+            </div>
+
+            <pre data-lang="PHP" data-title="src/Product.php"><code>class Product
+{
+    private string $name;
+    private float $price;
+
+    public function getName(): string
+    {
+        return $this-&gt;name;
+    }
+
+    public function setName(string $name): void
+    {
+        $this-&gt;name = $name;
+    }
+
+    public function getPrice(): float
+    {
+        return $this-&gt;price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        if ($price &gt;= 0) {
+            $this-&gt;price = $price;
+        }
+    }
+}</code></pre>
+
+            <pre data-lang="PHP" data-title="validation test"><code>$product1 = new Product();
+$product1-&gt;setName('hammer');
+$product1-&gt;setPrice(9.99);
+
+print "(initial value) product 1 price = {$product1-&gt;getPrice()}";
+$product1-&gt;setPrice(-0.5);
+print '&lt;br&gt;(test 1) trying -0.5: ';
+print "product 1 price = {$product1-&gt;getPrice()}";
+
+$product1-&gt;setPrice(22);
+print '&lt;br&gt;(test 2) trying 22: ';
+print "product 1 price = {$product1-&gt;getPrice()}";</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-07.png" data-slide="07">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 07
+            </button>
+            <span class="page-ref">Slide 7 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s08">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 08</span>
+            <div class="lesson-head-main">
+              <h3>Constructor magic method</h3>
+              <p class="lesson-deck"><code>__construct()</code> runs when an object is created</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>Unlike any other programming language, a constructor method in PHP does not have similar name at its class name</li>
+              <li>The <strong><code>__construct()</code></strong> magic method
+                <ul>
+                  <li>Overrides default behavior of an object</li>
+                  <li>It needs to be declared first within the class</li>
+                  <li>It can provide initial values for object properties by linking the parameters sent when creating the object</li>
+                  <li>It can simplify the class declaration through ‘promotion’ since the class property can be declared and assign within the magic method</li>
+                </ul>
+              </li>
+            </ul>
+
+            <div class="callout callout--teal">
+              <span class="callout-label">Slide note</span>
+              <p>Notice the use of <strong>setter</strong> methods within <strong><code>__construct()</code></strong> magic method</p>
+            </div>
+
+            <pre data-lang="PHP" data-title="src/Product.php"><code>class Product
+{
+    private string $name;
+    private float $price;
+
+    public function __construct(string $name, float $price)
+    {
+        $this-&gt;setName($name);
+        $this-&gt;setPrice($price);
+    }
+}</code></pre>
+
+            <pre data-lang="PHP" data-title="creating an object"><code>$product1 = new Product('hammer', 9.99);
+print 'product 1 name = ' . $product1-&gt;getName();
+print ", and price = {$product1-&gt;getPrice()}";</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-08.png" data-slide="08">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 08
+            </button>
+            <span class="page-ref">Slide 8 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s09">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 09</span>
+            <div class="lesson-head-main">
+              <h3>__toString magic method and NULL reference</h3>
+              <p class="lesson-deck">Summarising an object as a string, and returning <code>NULL</code> when an object cannot be created</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>The <strong><code>__toString()</code></strong> magic method
+                <ul>
+                  <li>Can be used to summarized the object as string values</li>
+                </ul>
+              </li>
+              <li>We may also need to create a return of <strong>NULL</strong> when our code cannot create an object, e.g., due to some restriction or failure of a procedure</li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="__toString()"><code>public function __toString(): string
+{
+    return '(Product) name = ' . $this-&gt;name . ', and price = ' . $this-&gt;price;
+}</code></pre>
+
+            <pre data-lang="PHP" data-title="nullable return"><code>public function blogFromId (int $id): ?Blog {
+    if (is_numeric($id) &amp;&amp; $id &gt; 0) {
+        return $this-&gt;blogRepository-&gt;find($id);
+    }
+    return NULL;
+}</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-09.png" data-slide="09">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 09
+            </button>
+            <span class="page-ref">Slide 9 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s10">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 10</span>
+            <div class="lesson-head-main">
+              <h3>Custom method and virtual attributes</h3>
+              <p class="lesson-deck">Methods that calculate new information instead of returning a stored property</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>We can create custom methods to provide useful information for our class</li>
+              <li>Custom methods can act as <strong><em>virtual attributes</em></strong>
+                <ul>
+                  <li>Instead of providing a variation on an existing property we can perform calculations to arrive at a completely new piece of information</li>
+                  <li>For example, if our class’s property is about <strong>date</strong> or timestamp, we can have a custom method to create virtual attributes related to <strong>age</strong></li>
+                </ul>
+              </li>
+            </ul>
+            <div class="callout callout--quiet">
+              <span class="callout-label">Reader note</span>
+              <p>The slide introduces the idea without code. A worked example appears in the Chinese tutorial, Chapter 03.</p>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-10.png" data-slide="10">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 10
+            </button>
+            <span class="page-ref">Slide 10 of 28</span>
+          </div>
+        </article>
+      </section>
+
+      <section id="ch19" class="chapter">
+        <header class="chapter-cover" data-number="02">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">Chapter 02</span><span>CH19</span></div>
+            <h2>Subclasses and Inheritance</h2>
+            <p>Reusing shared members in a superclass, extending it with specialised subclasses, and keeping the resulting hierarchy safe and predictable.</p>
+            <div class="chapter-agenda">Lecture divider: <strong>Subclasses and Inheritance (CH19)</strong></div>
+          </div>
+        </header>
+
+        <article class="lesson" id="s12">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 12</span>
+            <div class="lesson-head-main">
+              <h3>Inheritance and Subclasses</h3>
+              <p class="lesson-deck">Shared members are defined once in the superclass</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li><em>Inheritance</em> is the capability of one or more classes, called <em>subclasses</em>, to automatically have all the same properties and methods as another class, called a <em>superclass</em>.
+                <ul>
+                  <li>We can define any general, shared members only once, in the superclass.</li>
+                  <li>Objects of the subclasses inherit those properties and methods</li>
+                  <li>The subclasses will also have whatever properties and methods are specific to the individual subclasses.</li>
+                </ul>
+              </li>
+              <li>Subclasses can also <em>override</em> the superclass’s methods</li>
+            </ul>
+
+            <div class="diagram">
+              <div class="diagram-inner">
+                <div class="uml-box">
+                  <div class="uml-name">Vehicle</div>
+                  <div class="uml-section">
+                    <div>makeModel: String</div>
+                    <div>numPassengers: Integer</div>
+                    <div>topSpeed: Float</div>
+                  </div>
+                </div>
+                <div class="connector" aria-hidden="true"></div>
+                <div class="uml-row">
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Car</div>
+                      <div class="uml-section"><div>bodyShape: String</div></div>
+                    </div>
+                  </div>
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Boat</div>
+                      <div class="uml-section"><div>countryOfRegistration: String</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="uml-row" style="margin-top:44px">
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Car</div>
+                      <div class="uml-section">
+                        <div>makeModel: String</div>
+                        <div>numPassengers: Integer</div>
+                        <div>topSpeed: Float</div>
+                        <div>bodyShape: String</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Boat</div>
+                      <div class="uml-section">
+                        <div>makeModel: String</div>
+                        <div>numPassengers: Integer</div>
+                        <div>topSpeed: Float</div>
+                        <div>countryOfRegistration: String</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="diagram-caption">The lower pair shows the members each subclass has after inheritance.</p>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-12.png" data-slide="12">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 12
+            </button>
+            <span class="page-ref">Slide 12 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s13">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 13</span>
+            <div class="lesson-head-main">
+              <h3>Inheritance and Subclasses</h3>
+              <p class="lesson-deck">The <code>extends</code> keyword, and why file order matters</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>You can inherit another class by using <strong>extend</strong> keyword</li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="src/Vehicle.php"><code>class Vehicle
+{
+    public string $makeModel;
+    public int $numPassengers;
+    public float $topSpeed;
+}</code></pre>
+
+            <pre data-lang="PHP" data-title="src/Car.php"><code>class Car extends Vehicle
+{
+    public string $bodyShape;
+}</code></pre>
+
+            <pre data-lang="PHP" data-title="main script"><code>require_once __DIR__ . '/../src/Vehicle.php';
+require_once __DIR__ . '/../src/Car.php';
+
+$car1 = new Car();
+
+$car1-&gt;bodyShape = 'Sedan';
+$car1-&gt;makeModel = 'Ford Mustang';
+$car1-&gt;numPassengers = 5;
+$car1-&gt;topSpeed = 150;
+
+var_dump($car1);</code></pre>
+
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p>All classes file needs to be read in our main file. The order the files were read is important. Vehicle needs to be read before Car since Car <strong>extends</strong> Vehicle</p>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-13.png" data-slide="13">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 13
+            </button>
+            <span class="page-ref">Slide 13 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s14">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 14</span>
+            <div class="lesson-head-main">
+              <h3>Inheritance and Subclasses</h3>
+              <p class="lesson-deck">PHP allows one direct superclass per class</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>PHP permits each class to have only a single direct superclass.
+                <ul>
+                  <li>This safeguard prevents ambiguities as to where a property or method is being inherited from,</li>
+                  <li>but it also adds challenges when it comes to designing class hierarchies.</li>
+                </ul>
+              </li>
+            </ul>
+
+            <div class="diagram">
+              <div class="diagram-inner">
+                <div class="uml-box">
+                  <div class="uml-name">Vehicle</div>
+                  <div class="uml-section">
+                    <div>makeModel: String</div>
+                    <div>numPassengers: Integer</div>
+                    <div>topSpeed: Float</div>
+                  </div>
+                </div>
+                <div class="connector" aria-hidden="true"></div>
+                <div class="uml-row">
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Car</div>
+                      <div class="uml-section"><div>bodyShape: String</div></div>
+                    </div>
+                  </div>
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Boat</div>
+                      <div class="uml-section"><div>countryOfRegistration: String</div></div>
+                    </div>
+                    <div class="connector" aria-hidden="true"></div>
+                    <div class="uml-row" style="gap:20px">
+                      <div class="uml-box">
+                        <div class="uml-name">MotorBoat</div>
+                        <div class="uml-section"><div>engineSize: Integer</div></div>
+                      </div>
+                      <div class="uml-box">
+                        <div class="uml-name">SailBoat</div>
+                        <div class="uml-section"><div>numberOfMasts: Integer</div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p>Once class hierarchies get more complex, care must be taken in their design.</p>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-14.png" data-slide="14">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 14
+            </button>
+            <span class="page-ref">Slide 14 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s15">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 15</span>
+            <div class="lesson-head-main">
+              <h3>Protected Visibility</h3>
+              <p class="lesson-deck">Accessible to subclasses, closed to the rest of the project</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>When method/property is protected
+                <ul>
+                  <li>it becomes accessible to any subclasses that inherit it,</li>
+                  <li>but it can’t be accessed by code elsewhere in the project</li>
+                </ul>
+              </li>
+              <li>The <strong>protected</strong> visibility designation is more restrictive than <strong>public</strong> but is less restrictive than <strong>private</strong></li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="src/Vehicle.php"><code>class Vehicle
+{
+    private string $makeModel;
+    private int $numPassengers;
+    private float $topSpeed;
+
+    public function getMakeModel(): string
+    {
+        return $this-&gt;makeModel;
+    }
+}</code></pre>
+
+            <pre data-lang="PHP" data-title="src/Car.php"><code>class Car extends Vehicle
+{
+    public string $bodyShape;
+
+    public function getMakeModelShape(): string
+    {
+        return "$this-&gt;makeModel, $this-&gt;bodyShape";
+    }
+}</code></pre>
+
+            <pre data-lang="PHP" data-title="main script"><code>$car1 = new Car();
+
+$car1-&gt;bodyShape = 'Sedan';
+$car1-&gt;setMakeModel('Ford Mustang');
+$car1-&gt;setNumPassengers(5);
+$car1-&gt;setTopSpeed(150);
+
+print $car1-&gt;getMakeModelShape();</code></pre>
+
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p><code>$makeModel</code> is private, the Car subclass cannot access the superclass’s property. Your code will produce a warning. Its visibility should be changed to <code>protected</code> to avoid the warning</p>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-15.png" data-slide="15">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 15
+            </button>
+            <span class="page-ref">Slide 15 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s16">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 16</span>
+            <div class="lesson-head-main">
+              <h3>Protected Visibility</h3>
+              <p class="lesson-deck">Reading visibility from a UML diagram, and keeping accessors in charge</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <div class="diagram">
+              <div class="diagram-inner">
+                <div class="uml-box">
+                  <div class="uml-name">Vehicle</div>
+                  <div class="uml-section">
+                    <div><span class="stereo">«get/set»</span> #makeModel: String</div>
+                    <div><span class="stereo">«get/set»</span> -numPassengers: Integer</div>
+                    <div><span class="stereo">«get/set»</span> -topSpeed: Float</div>
+                  </div>
+                </div>
+                <div class="connector" aria-hidden="true"></div>
+                <div class="uml-row">
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Car</div>
+                      <div class="uml-section">
+                        <div>+bodyShape: String</div>
+                        <div>+getMakeModelShape(): String</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Boat</div>
+                      <div class="uml-section"><div>+countryOfRegistration: String</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p>The <strong>get/set</strong> indicates stereotyping the accessor methods</p>
+              <p>The <strong>#</strong> before makeModel signify that it has a protected visibilty</p>
+              <p>Setting a property to be protected does not mean that the subclass can modify them directly.</p>
+              <p>You still need to use proper getter/setter accessor methods</p>
+            </div>
+
+            <pre data-lang="PHP" data-title="main script"><code>require_once __DIR__ . '/../src/Vehicle.php';
+require_once __DIR__ . '/../src/Car.php';
+
+$car1 = new Car();
+
+$car1-&gt;bodyShape = 'Sedan';
+$car1-&gt;makeModel = 'Ford Mustang';
+
+$car1-&gt;setMakeModel('Ford Mustang');
+$car1-&gt;setNumPassengers(5);
+$car1-&gt;setTopSpeed(150);
+
+print $car1-&gt;getMakeModelShape();</code></pre>
+
+            <pre data-lang="PHP" data-title="src/Vehicle.php (accessors)"><code>public function getMakeModel(): string
+{
+    return $this-&gt;makeModel;
+}
+
+public function setMakeModel(string $makeModel): void
+{
+    $this-&gt;makeModel = $makeModel;
+}</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-16.png" data-slide="16">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 16
+            </button>
+            <span class="page-ref">Slide 16 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s17">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 17</span>
+            <div class="lesson-head-main">
+              <h3>Abstract Classes</h3>
+              <p class="lesson-deck">A base class that exists only to be inherited</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>An <strong><em>abstract</em></strong> class is one that will never be used to create objects
+                <ul>
+                  <li>It is declared so their members (properties and methods) can be inherited by subclasses, e.g., the Vehicle class in our examples is an abstract class</li>
+                </ul>
+              </li>
+              <li>An abstract class can be used to declare <strong><em>static</em></strong> members, properties, or methods that relate to the class as a whole rather than to individual objects.</li>
+            </ul>
+
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <p>You should use <strong>abstract</strong> keyword to specify the purpose of a class</p>
+            </div>
+
+            <pre data-lang="PHP" data-title="src/Vehicle.php"><code>abstract class Vehicle
+{
+    protected string $makeModel;
+    private int $numPassengers;
+    private float $topSpeed;
+
+    public function getMakeModel(): string
+    {
+        return $this-&gt;makeModel;
+    }
+
+    public function setMakeModel(string $makeModel): void
+    {
+        $this-&gt;makeModel = $makeModel;
+    }
+}</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-17.png" data-slide="17">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 17
+            </button>
+            <span class="page-ref">Slide 17 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s18">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 18</span>
+            <div class="lesson-head-main">
+              <h3>Override</h3>
+              <p class="lesson-deck">A subclass replaces an inherited method with its own behaviour</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>To <em>override</em> a method, we need to define the method directly on the subclass and giving it the same name as the method inherited from the superclass
+                <ul>
+                  <li>The behavior of method <code>__toString</code> of the subclass is not similar to the one declared in the superclass</li>
+                </ul>
+              </li>
+            </ul>
+
+            <div class="diagram">
+              <div class="diagram-inner">
+                <div class="uml-row" style="align-items:center">
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Food</div>
+                      <div class="uml-section">
+                        <div>#name: String</div>
+                        <div style="margin-top:6px">«constructor» +(name: String)</div>
+                        <div>+__toString(): String</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="uml-note">
+                    <strong>Note</strong>
+                    toString() to output in the form:<br>“(FOOD) &lt;name&gt;”
+                  </div>
+                </div>
+                <div class="connector" aria-hidden="true"></div>
+                <div class="uml-row" style="align-items:center">
+                  <div class="uml-col">
+                    <div class="uml-box">
+                      <div class="uml-name">Dessert</div>
+                      <div class="uml-section"><div>+__toString(): String</div></div>
+                    </div>
+                  </div>
+                  <div class="uml-note">
+                    <strong>Note</strong>
+                    toString() to output in the form:<br>“I am a Dessert named &lt;name&gt;”
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-18.png" data-slide="18">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 18
+            </button>
+            <span class="page-ref">Slide 18 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s19">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 19</span>
+            <div class="lesson-head-main">
+              <h3>The Liskov Substitution Principle</h3>
+              <p class="lesson-deck">A subclass must be usable anywhere its superclass is expected</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>The method that was override can have identical signature</li>
+              <li>Liskov substitution principle (LSP) stated that that you must be able to substitute an object of a superclass with an object of a subclass without creating any unexpected behavior.
+                <ul>
+                  <li><strong>Make a mandatory parameter optional</strong> - For example, a superclass method <code>validUser(int $minAge)</code>, could be overridden by a subclass method that provides a default value, e.g., <code>validUser(int $minAge = 18)</code>.</li>
+                  <li><strong>Add new optional parameters</strong> - Method <code>validUser(int $minAge)</code> superclass method could be overridden by a subclass method that adds another optional parameter (with a default value), such as <code>validUser(int $minAge, int $maxAge = 65)</code>.</li>
+                  <li><strong>Return a more specific type</strong> - If a superclass has a <code>getRandomFood()</code> method that returns a reference to a Food object, this method could be overridden by a subclass method that returns a Dessert object instead (where Dessert is a subclass of Food). This is aka <em>covariance</em>.</li>
+                  <li><strong>Declare a parameter type to be less specific</strong> - For example, if a superclass has a method that takes a Dessert object as a parameter, a subclass could override it with a method that instead takes a Food object as a parameter. This is aka <em>contravariance</em>.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-19.png" data-slide="19">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 19
+            </button>
+            <span class="page-ref">Slide 19 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s20">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 20</span>
+            <div class="lesson-head-main">
+              <h3>Augmenting Inherited Behavior</h3>
+              <p class="lesson-deck">Call the parent method, then add to its result</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>The subclass <strong>Dessert</strong> augment its parent <code>__toString()</code> method by adding into the <code>$message</code></li>
+              <li>Notice the use of <em>scope-resolution operator</em> (<code>::</code>)</li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="src/Food.php"><code>class Food
+{
+    protected string $name;
+
+    public function __construct(string $name)
+    {
+        $this-&gt;name = $name;
+    }
+
+    public function __toString(): string
+    {
+        return "(FOOD) $this-&gt;name";
+    }
+}</code></pre>
+
+            <pre data-lang="PHP" data-title="src/Dessert.php"><code>class Dessert extends Food
+{
+    public function __toString(): string
+    {
+        $message = parent::__toString();
+        $message .= " I am a Dessert!";
+        return $message;
+    }
+}</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-20.png" data-slide="20">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 20
+            </button>
+            <span class="page-ref">Slide 20 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s21">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 21</span>
+            <div class="lesson-head-main">
+              <h3>The Final keyword</h3>
+              <p class="lesson-deck">Preventing a method from being overridden — and when not to seal a class</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>You can use the <strong>final</strong> keyword to the declaration of a method to prevent the method from being overridden by a subclass.</li>
+              <li>Using the final keyword on a class is not recommended, except
+                <ul>
+                  <li>if you have an API library and you don’t want to allow or encourage programmers to expect different behaviors besides those declared in the API.</li>
+                  <li>to help prevent code from breaking between versions and across updates; when a class is final, changes to the class’s internal implementation won’t have any unintended consequences outside the class.</li>
+                </ul>
+              </li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="src/Product.php"><code>class Product
+{
+    protected int $skuId;
+    private string $description;
+
+    public function __construct(int $skuId, string $description)
+    {
+        $this-&gt;skuId = $skuId;
+        $this-&gt;description = $description;
+    }
+
+    public function getSkuId(): int
+    {
+        return $this-&gt;skuId;
+    }
+
+    public function getDescription(): string
+    {
+        return $this-&gt;description;
+    }
+
+    final public function setSkuId(int $skuId): void
+    {
+        if ($skuId &gt; 0) $this-&gt;skuId = $skuId;
+    }
+}</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-21.png" data-slide="21">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 21
+            </button>
+            <span class="page-ref">Slide 21 of 28</span>
+          </div>
+        </article>
+      </section>
+
+      <section id="ch20" class="chapter">
+        <header class="chapter-cover" data-number="03">
+          <div class="chapter-cover-inner">
+            <div class="chapter-kicker"><span class="chip">Chapter 03</span><span>CH20</span></div>
+            <h2>Namespaces</h2>
+            <p>Organising classes into a virtual directory tree, resolving names, and letting Composer load class files on demand.</p>
+            <div class="chapter-agenda">Agenda entry: <strong>Object Oriented Web (CH20)</strong> · Lecture divider: <strong>Namespaces (CH20)</strong></div>
+          </div>
+        </header>
+
+        <article class="lesson" id="s23">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 23</span>
+            <div class="lesson-head-main">
+              <h3>Namespaces</h3>
+              <p class="lesson-deck">A virtual hierarchy of directories for classes</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li><em>Namespaces</em> is a kind of virtual hierarchy of directories for classes, used to prevent class name collisions.
+                <ul>
+                  <li>Classes are organized within namespaces and sub-namespaces,</li>
+                </ul>
+              </li>
+              <li>A backslash character (\) separates namespaces, sub-namespaces (if any), and the class name. For example, <code>\MyNamespace\MySubNamespace\MyClass</code></li>
+              <li>Classes that are built into the PHP language are in the <em>root namespace</em>, identified by a single backslash character</li>
+              <li>To declare the namespace of a class, use the <strong>namespace</strong> keyword followed by the namespace’s name.
+                <ul>
+                  <li>This should be the first line of PHP code in the class-declaration file</li>
+                </ul>
+              </li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="src/Shirt.php"><code>namespace Mattsmithdev;
+
+class Shirt
+{
+    private string $type = 't-shirt';
+
+    public function getType(): string
+    {
+        return $this-&gt;type;
+    }
+
+    public function setType(string $type): void
+    {
+        $this-&gt;type = $type;
+    }
+}</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-23.png" data-slide="23">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 23
+            </button>
+            <span class="page-ref">Slide 23 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s24">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 24</span>
+            <div class="lesson-head-main">
+              <h3>Namespaces</h3>
+              <p class="lesson-deck">Fully qualified names versus a <code>use</code> statement</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>To use a namespace:
+                <ul>
+                  <li>Include the namespace when referencing the class; this is called using the <em>fully qualified name</em> of the class. For example: <code>new \Mattsmithdev\Shirt()</code>.</li>
+                  <li>Include a <code>use</code> statement before invoking the class without a backslash; this is called using <em>qualified name</em>. For example, <code>use Mattsmithdev\Shirt</code></li>
+                </ul>
+              </li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="fully qualified name"><code>$shirt1 = new \Mattsmithdev\Shirt();
+$shirt2 = new \Mattsmithdev\Shirt();
+
+print "shirt 1 type = {$shirt1-&gt;getType()}";</code></pre>
+
+            <pre data-lang="PHP" data-title="use statement"><code>use Mattsmithdev\Shirt;
+
+$shirt1 = new Shirt();
+$shirt2 = new Shirt();
+
+print "shirt 1 type = {$shirt1-&gt;getType()}";</code></pre>
+
+            <div class="callout">
+              <span class="callout-label">Slide note</span>
+              <ul class="lecture-list" style="margin:0">
+                <li>Without using the initial backslash, PHP will assume you’re referring to a class or sub-namespace of the current namespace</li>
+                <li>if you <em>are</em> referring to a class or sub-namespace of the current namespace, you shouldn’t include a backslash before the class or sub-namespace.</li>
+                <li>If you’re using a class from another namespace only once, you can use their fully qualified name, including the initial backslash.</li>
+                <li>If you’ll need to refer to the class several times, however, writing a use statement is more efficient, i.e., no initial backslash is needed.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-24.png" data-slide="24">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 24
+            </button>
+            <span class="page-ref">Slide 24 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s25">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 25</span>
+            <div class="lesson-head-main">
+              <h3>Composer</h3>
+              <p class="lesson-deck">The command-line tool that manages class files, namespaces, and dependencies</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>Composer is command line tool to support OOP PHP
+                <ul>
+                  <li>It helps with loading class and function declaration files</li>
+                  <li>It facilitates working with classes from different namespaces.</li>
+                  <li>It is used in Laravel framework</li>
+                </ul>
+              </li>
+              <li>A <em>composer.json</em> file is needed to house all the information Composer needs to know about the project.
+                <ul>
+                  <li>It records of the namespaces and class locations for your own code, as well as of the third-party packages that the project depends on.</li>
+                  <li>It can have a command line <em>aliases</em></li>
+                </ul>
+              </li>
+              <li>The <em>composer.json</em> text file must be located at the top level of your PHP project directory</li>
+            </ul>
+
+            <div class="split">
+              <div>
+                <pre data-lang="JSON" data-title="composer.json"><code>{
+    "scripts": {
+        "hello": "echo Hello World"
+    }
+}</code></pre>
+              </div>
+              <div>
+                <pre data-lang="Terminal" data-title="custom script"><code>$ composer hello
+&gt; echo Hello, world!
+Hello, world!</code></pre>
+              </div>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-25.png" data-slide="25">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 25
+            </button>
+            <span class="page-ref">Slide 25 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s26">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 26</span>
+            <div class="lesson-head-main">
+              <h3>Autoloader</h3>
+              <p class="lesson-deck">PSR-4 maps namespaces to directories, so files load only when needed</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>An <em>autoloader</em> is a system that automatically retrieves class-declaration files whenever they’re needed</li>
+              <li>PSR-4 recommendation
+                <ul>
+                  <li>the base directory containing the classes of each namespace should be declared</li>
+                  <li>any sub-namespaces will be assumed to have corresponding subdirectories within the declared base directory of the namespace.</li>
+                </ul>
+              </li>
+              <li>Steps to use Composer autoloader
+                <ul>
+                  <li>Declare the base directory for each namespace in the project’s <em>composer.json</em> file.</li>
+                  <li>Tell Composer to create or update its autoloader script.</li>
+                  <li>Add a <code>require_once</code> statement for the autoloader script at the beginning of the project’s <em>public /index.php</em> front controller. This single <code>require_once</code> statement replaces the separate <code>require_once</code> statements for each individual class.</li>
+                </ul>
+              </li>
+            </ul>
+
+            <pre data-lang="JSON" data-title="composer.json"><code>{
+    "autoload": {
+        "psr-4": {
+            "Mattsmithdev\\": "src"
+        }
+    }
+}</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-26.png" data-slide="26">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 26
+            </button>
+            <span class="page-ref">Slide 26 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s27">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 27</span>
+            <div class="lesson-head-main">
+              <h3>Autoloader</h3>
+              <p class="lesson-deck">Generating <code>vendor/autoload.php</code> and requiring it from the front controller</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>To create a class autoloader, run the following:
+                <pre data-lang="Terminal" style="margin-top:10px"><code>composer dump-autoload</code></pre>
+              </li>
+              <li>This will create vendor folder and a file <strong>vendor/autoload.php</strong> and a <strong>vendor/composer</strong> folder containing several more scripts, including <strong>autoload_psr4.php</strong>, which encodes our PSR-4-compliant declaration</li>
+              <li>The front controller can instead require the autoloader file</li>
+            </ul>
+
+            <pre data-lang="PHP" data-title="public/index.php"><code>require_once __DIR__ . '/../vendor/autoload.php';
+
+use Mattsmithdev\Shirt;
+
+$shirt1 = new Shirt();
+$shirt2 = new Shirt();
+
+print "shirt 1 type = {$shirt1-&gt;getType()}";</code></pre>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-27.png" data-slide="27">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 27
+            </button>
+            <span class="page-ref">Slide 27 of 28</span>
+          </div>
+        </article>
+
+        <article class="lesson" id="s28">
+          <div class="lesson-head">
+            <span class="slide-chip">Slide 28</span>
+            <div class="lesson-head-main">
+              <h3>Autoloader: adding a library</h3>
+              <p class="lesson-deck">Vendor and package names are Composer identifiers, not PHP namespaces</p>
+            </div>
+          </div>
+          <div class="lesson-body">
+            <ul class="lecture-list">
+              <li>To add a new library, we need to tell composer that we require a new one. For example:
+                <pre data-lang="Terminal" style="margin-top:10px"><code>composer require markrogoyski/math-php</code></pre>
+              </li>
+              <li>Composer will download the library, put them in the vendor folder, update the autoloader and record its dependency in composer.json file</li>
+              <li>The vendor name, i.e., <code>markrogoyski</code>, and package name, i.e., <code>math-php</code> are <em>not</em> namespaces.
+                <ul>
+                  <li>These are names that Composer uses to identify and locate the third-party scripts to be added to the project</li>
+                </ul>
+              </li>
+            </ul>
+
+            <div class="split">
+              <div>
+                <pre data-lang="JSON" data-title="composer.json"><code>{
+    "autoload": {
+        "psr-4": {
+            "Mattsmithdev\\": "src"
+        }
+    },
+    "require": {
+        "markrogoyski/math-php": "^2.10"
+    }
+}</code></pre>
+              </div>
+              <div>
+                <pre data-lang="PHP" data-title="using the library"><code>require_once __DIR__ . '/../vendor/autoload.php';
+
+use MathPHP\Statistics\Average;
+
+$numbers = [13, 18, 13, 14, 13, 16, 14, 21, 13];
+$numbersString = implode(', ', $numbers);
+$mean = Average::mean($numbers);
+print "average of [ $numbersString ] = $mean";</code></pre>
+              </div>
+            </div>
+          </div>
+          <div class="lesson-foot">
+            <button class="source-btn" type="button" data-lightbox="assets/pages/page-28.png" data-slide="28">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m9 9 3 3-3 3M14 15h3"/></svg>
+              Original slide 28
+            </button>
+            <span class="page-ref">Slide 28 of 28</span>
+          </div>
+        </article>
+      </section>
+
+      <section id="source" class="lesson">
+        <div class="lesson-head">
+          <span class="slide-chip">Colophon</span>
+          <div class="lesson-head-main">
+            <h2 style="font-family:var(--font-serif);font-size:clamp(1.8rem,3.4vw,2.4rem)">Source notes</h2>
+            <p class="lesson-deck">Provenance, reproduction policy, and the original copyright line</p>
+          </div>
+        </div>
+        <div class="lesson-body">
+          <p class="lead">The source is the Week 6 lecture deck <strong>“CSIS 3280: Lecture 6”</strong> (28 slides), covering Classes and Objects (CH18), Subclasses and Inheritance (CH19), and Object Oriented Web / Namespaces (CH20).</p>
+          <ul class="lecture-list">
+            <li>Slide titles, bullet wording, notes, examples, and terminology are reproduced from the deck without paraphrase.</li>
+            <li>Code shown in slide screenshots has been transcribed into text so it can be read and copied; whitespace and indentation were normalised for the web page.</li>
+            <li>UML diagrams are redrawn in HTML from the slide diagrams; labels and members are preserved.</li>
+            <li>Each lesson links to the corresponding original slide image, which remains the authoritative visual record.</li>
+          </ul>
+          <div class="callout">
+            <span class="callout-label">Original copyright notice</span>
+            <p>© Copyright Bambang and others. NOT FOR DISTRIBUTION</p>
+          </div>
+          <p class="small">This HTML edition is a personal study copy. The lecture content and copyright remain with the original author. Do not redistribute the source material.</p>
+        </div>
+        <div class="lesson-foot">
+          <a class="source-btn" href="zh.html" lang="zh-CN" hreflang="zh-CN">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            Continue in Chinese
+          </a>
+          <span class="page-ref">End of reader</span>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <p><strong>CSIS 3280: Lecture 6</strong> · HTML textbook edition. Lecture text © Copyright Bambang and others. NOT FOR DISTRIBUTION.</p>
+        <p class="footer-links">
+          <a href="#cover">Back to top</a>
+          <a href="zh.html" lang="zh-CN" hreflang="zh-CN">中文教程</a>
+          <a href="assets/pages/page-01.png" target="_blank" rel="noopener">Original slide images</a>
+        </p>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Original lecture slide">
+  <div class="lightbox-panel">
+    <div class="lightbox-bar">
+      <span id="lightbox-title">Original slide</span>
+      <a class="lightbox-open" id="lightbox-open" href="#" target="_blank" rel="noopener">Open image</a>
+      <button class="lightbox-close" type="button" aria-label="Close preview">×</button>
+    </div>
+    <div class="lightbox-img-wrap">
+      <img id="lightbox-img" src="" alt="">
+    </div>
+  </div>
+</div>
+
+<button class="back-top" type="button" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+</button>
+
+<script src="assets/app.js?v=20261027e"></script>
+</body>
+</html>
