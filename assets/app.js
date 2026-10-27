@@ -224,7 +224,8 @@
       '<div class="blank-cell">' +
       '<div class="blank-box" data-blank="' + id + '">' +
       '<div class="blank-label"><span class="badge">' + CIRCLED[bi] + '</span>' + escapeHtml(b.label) + '</div>' +
-      '<textarea data-blank-input="' + id + '" rows="' + rows + '" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="' + escapeHtml(b.placeholder || '') + '">' + value + '</textarea>' +
+      '<textarea data-blank-input="' + id + '" rows="' + rows + '" spellcheck="false" autocomplete="off" autocapitalize="off"' +
+      ' aria-label="' + escapeHtml(b.label) + '" placeholder="' + escapeHtml(b.placeholder || '') + '">' + value + '</textarea>' +
       '<div class="blank-msg" hidden></div>' +
       '</div></div></div>';
   }
@@ -242,7 +243,7 @@
         if (!b) { html += escapeHtml(bid); continue; }
         html += '<input class="blank-inline" type="text" data-blank="' + bid + '" data-blank-input="' + bid + '"' +
           ' size="' + (b.size || 10) + '" spellcheck="false" autocomplete="off"' +
-          ' placeholder="' + escapeHtml(b.placeholder || '') + '"' +
+          ' aria-label="' + escapeHtml(b.label) + '" placeholder="' + escapeHtml(b.placeholder || '') + '"' +
           ' value="' + escapeHtml(getDraft(q.id, bid)) + '">';
       }
     }
