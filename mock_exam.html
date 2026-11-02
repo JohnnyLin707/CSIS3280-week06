@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 06 · 考前编程题精讲 | CSIS3280</title>
+<meta name="description" content="CSIS3280 Backend Web Development Week 06 考前编程题精讲：CH18 Product、CH19 Vehicle/Car、Food/Dessert。左栏老师代码框架 + 双语题目与提示，右栏代码补全与中文『为什么』注释。">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f46e5'/%3E%3Ctext x='32' y='42' font-family='Menlo,monospace' font-size='19' font-weight='bold' fill='%23ffffff' text-anchor='middle'%3EPHP%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#0f172a; --muted:#5b6b83; --line:#e3e8f2;
+  --brand:#4f46e5; --brand-soft:#eef2ff; --ok:#0e9f6e; --ok-soft:#ecfdf5;
+  --amber-soft:#fffbeb; --amber-line:#fde68a; --amber:#b45309;
+  --rose-soft:#fff1f2; --rose-line:#fecdd3; --rose:#9f1239;
+  --code-bg:#0d1526; --code-head:#111d33; --code-line:#22314e; --code-ink:#d7e1f5;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:14px/1.65 "Segoe UI",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+code{font-family:Consolas,"Cascadia Code",Menlo,monospace;font-size:.92em;
+  background:#f1f5f9;border:1px solid #e2e8f0;border-radius:5px;padding:1px 5px}
+h1,h2,h3,h4{line-height:1.35}
+
+/* ---------- 顶栏 ---------- */
+.topbar{position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+  gap:14px;padding:10px 22px;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line)}
+.brand{display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit}
+.brand-mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#4338ca);
+  color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex:none}
+.brand h1{font-size:15px;margin:0}
+.brand p{margin:0;font-size:11.5px;color:var(--muted)}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.progress-wrap{display:flex;align-items:center;gap:8px}
+.progress-track{width:130px;height:8px;border-radius:99px;background:#e8ecf6;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#6366f1,#22c55e);transition:width .3s}
+.progress-label{font-size:12px;color:var(--muted);white-space:nowrap}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;
+  color:var(--ink);border-radius:10px;padding:7px 12px;font-size:13px;cursor:pointer;transition:.15s;text-decoration:none}
+.btn:hover{border-color:var(--brand);color:var(--brand)}
+.btn[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.danger:hover{border-color:#e11d48;color:#e11d48}
+
+/* ---------- 布局 ---------- */
+.shell{display:grid;grid-template-columns:236px minmax(0,1fr);gap:20px;max-width:1250px;margin:0 auto;padding:20px 22px}
+.sidebar{position:sticky;top:74px;align-self:start;background:var(--card);border:1px solid var(--line);
+  border-radius:16px;padding:12px;max-height:calc(100vh - 96px);overflow:auto}
+.side-part h5{font-size:11.5px;color:var(--muted);margin:12px 6px 4px;font-weight:600}
+.side-item{display:flex;gap:8px;align-items:center;padding:7px 9px;border-radius:9px;color:var(--ink);
+  font-size:12.8px;text-decoration:none}
+.side-item:hover{background:#f1f5f9}
+.side-item.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.side-num{width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;flex:none}
+.workspace{min-width:0}
+
+/* ---------- 考前说明 ---------- */
+.hero{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;scroll-margin-top:80px}
+.hero h2{margin:0 0 6px;font-size:19px}
+.hero .lead{margin:0 0 14px;color:var(--muted);font-size:13.5px}
+.map-table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 16px}
+.map-table th,.map-table td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.map-table thead th{background:#f8fafc;font-size:12px;color:var(--muted)}
+.map-table td.mono{font-family:Consolas,monospace;font-size:12px;color:#475569}
+.map-table td.pts,.map-table th.pts{text-align:right;white-space:nowrap}
+.map-table tfoot td{font-weight:700;background:#fbfcff}
+.sec-dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px;vertical-align:0}
+.cheats{display:grid;grid-template-columns:1fr 1fr;gap:7px 20px;margin:8px 0 0;padding:0;list-style:none}
+.cheats li{font-size:13px;color:#334155;padding-left:18px;position:relative}
+.cheats li::before{content:"";position:absolute;left:2px;top:8px;width:7px;height:7px;border-radius:2px;background:var(--brand)}
+.cheats-title{font-size:13px;font-weight:700;margin:2px 0 8px;color:var(--ink)}
+
+/* ---------- 题卡 ---------- */
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;
+  margin-top:20px;scroll-margin-top:80px}
+.qhead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.qnum{display:inline-flex;background:var(--brand);color:#fff;border-radius:8px;padding:4px 10px;
+  font-size:12px;font-weight:700}
+.chip{display:inline-block;font-size:11px;border-radius:999px;padding:3px 9px;background:#f1f5f9;
+  color:#475569;border:1px solid #e2e8f0}
+.chip.file{font-family:Consolas,monospace;background:var(--brand-soft);color:#3730a3;border-color:#dfe3ff}
+.chip.pts{background:var(--amber-soft);color:#92400e;border-color:#fde68a;font-weight:700}
+.qtitle{font-size:17px;margin:9px 0 7px}
+.qmeta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.master-btn{flex:none}
+.master-btn.on{background:var(--ok-soft);border-color:#a7f3d0;color:#047857}
+.qdesc{margin-top:13px;display:grid;gap:8px}
+.qen,.qzh{margin:0;border-radius:10px;padding:10px 12px;font-size:13.3px;line-height:1.75}
+.qen{background:#f8faff;border:1px dashed #c7d2fe;color:#3f4c68}
+.qzh{background:#f8fafc;border:1px solid var(--line)}
+.lang{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;border-radius:4px;
+  padding:1px 6px;margin-right:7px;vertical-align:1px}
+.lang.en{background:#e0e7ff;color:#3730a3}
+.lang.zh{background:#d1fae5;color:#065f46}
+
+/* ---------- 左右步骤 ---------- */
+.steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.step{background:#f9fafd;border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
+.step-head{display:flex;gap:8px;align-items:baseline;margin-bottom:10px;flex-wrap:wrap}
+.step-badge{font-size:10.5px;font-weight:800;letter-spacing:.06em;border-radius:6px;padding:3px 7px;flex:none}
+.step-badge.b1{background:#e0e7ff;color:#3730a3}
+.step-badge.b2{background:#ccfbf1;color:#0f766e}
+.step-head strong{font-size:13.5px}
+.step-sub{font-size:11.5px;color:var(--muted);margin-left:auto}
+
+/* ---------- 代码块 ---------- */
+.codeblock{border-radius:12px;overflow:hidden;border:1px solid var(--code-line)}
+.code-head{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--code-head);
+  color:#8ea3c8;padding:7px 12px;font:600 12px/1.4 Consolas,monospace;border-bottom:1px solid var(--code-line)}
+.codeblock pre{margin:0;padding:12px 8px 14px 4px;overflow:auto;background:var(--code-bg);color:var(--code-ink);
+  font:12.5px/1.62 "Cascadia Code",Consolas,"JetBrains Mono",Menlo,monospace;tab-size:4}
+.line{display:block;padding-left:46px;position:relative;counter-increment:ln;white-space:pre}
+.line::before{content:counter(ln);position:absolute;left:0;width:32px;text-align:right;color:#3f5378;font-size:11px}
+.c-com{color:#7d8aa5;font-style:italic}
+.c-why{color:#fbbf24}
+.c-todo{color:#fb7185;font-weight:600}
+.c-str{color:#a5d6ff}
+.c-var{color:#7dd3fc}
+.c-num{color:#e8b268}
+.c-kw{color:#ff7b72}
+.c-op{color:#ff7b72}
+.c-tag{color:#7ee2b8}
+.copy-btn{background:#1c2a47;color:#a5b8dd;border:1px solid #2b3d63;border-radius:8px;padding:3px 10px;
+  font-size:11.5px;cursor:pointer;font-family:inherit}
+.copy-btn:hover{color:#dbe7ff;border-color:#3b5285}
+
+/* ---------- 提示 / 易错 / 输出 ---------- */
+.hints{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:12px;
+  padding:12px 14px;margin-top:12px}
+.hints h4{margin:0 0 7px;font-size:12.5px;color:var(--amber)}
+.hints ol{margin:0;padding-left:20px;color:#77602a}
+.hints li{margin:5px 0;font-size:12.8px;line-height:1.7}
+.hints code{background:#fff7e0;border-color:#f3e3b3;color:#7c5a10}
+.pitfall{margin-top:0;background:var(--rose-soft);border:1px solid var(--rose-line);border-radius:12px;padding:11px 14px}
+.pitfall h4{margin:0 0 5px;font-size:12.5px;color:var(--rose)}
+.pitfall p{margin:0;font-size:12.8px;color:#881337;line-height:1.7}
+.pitfall code{background:#ffe4e6;border-color:#fecdd3;color:#9f1239}
+.qfoot{margin-top:13px;display:grid;gap:12px}
+.outbox{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.out-head{background:var(--code-head);color:#8ea3c8;padding:7px 12px;font:600 12px/1.4 Consolas,monospace;
+  border-bottom:1px solid var(--code-line)}
+.outbox pre{margin:0;background:var(--code-bg);color:#b5e3c8;padding:12px 14px;overflow:auto;
+  font:12.5px/1.6 Consolas,monospace}
+.out-note{padding:8px 12px;font-size:12px;color:var(--muted);background:#f8fafc;border-top:1px solid var(--line);line-height:1.7}
+
+/* ---------- 考试模式遮罩 ---------- */
+.lockable{position:relative}
+.lock-btn{position:absolute;inset:0;margin:auto;width:max-content;height:max-content;display:none;
+  align-items:center;background:var(--brand);color:#fff;border:none;border-radius:10px;padding:10px 16px;
+  font-size:13px;cursor:pointer;box-shadow:0 8px 24px rgba(79,70,229,.45);z-index:2;font-family:inherit}
+body.exam .lock-btn{display:inline-flex}
+body.exam .lockable:not(.revealed) .lock-content{filter:blur(11px);user-select:none;pointer-events:none}
+body.exam .lockable.revealed .lock-btn{display:none}
+
+.page-foot{max-width:1250px;margin:6px auto 30px;padding:0 22px;color:var(--muted);font-size:12px;
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.page-foot a{color:var(--brand);text-decoration:none}
+.page-foot a:hover{text-decoration:underline}
+
+@media (max-width:1020px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{position:static;max-height:none;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+  .side-part{display:contents}
+  .side-part h5{width:100%;margin:6px 6px 2px}
+  .steps{grid-template-columns:1fr}
+  .cheats{grid-template-columns:1fr}
+  .progress-track{width:80px}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="#intro">
+    <div class="brand-mark">PHP</div>
+    <div>
+      <h1>Week 06 · 考前编程题精讲</h1>
+      <p>CSIS3280 Backend Web Development · CH18 / CH19 · Mock Exam Review</p>
+    </div>
+  </a>
+  <div class="topbar-right">
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-label" id="progressLabel">已掌握 0 / 9</span>
+    </div>
+    <button class="btn" id="examBtn" type="button" aria-pressed="false">考试模式：关</button>
+    <a class="btn" href="index.html">填空练习</a>
+    <button class="btn danger" id="resetBtn" type="button">重置进度</button>
+  </div>
+</header>
+
+<main class="shell">
+  <aside class="sidebar" id="sidebar" aria-label="题目导航"></aside>
+  <section class="workspace">
+
+    <!-- ============ 考前说明 ============ -->
+    <section class="hero" id="intro">
+      <h2>考前辅导员的话</h2>
+      <p class="lead">
+        本卷共 <strong>9 题 / 3 部分 / 100 分</strong>，覆盖 <code>week06_starter</code> 的全部留空点；
+        每题上方是题目（英文 + 中文），下方分左右两步：左栏是<strong>老师给的代码框架</strong>（含提示），
+        右栏是<strong>代码补全参考答案</strong>，答案里的琥珀色中文注释解释<strong>为什么要这样写</strong>。
+        代码风格逐行贴合 <code>week06_demo</code>。建议流程：左栏自己写 → 右栏对答案 → 逐行读「为什么」→ 点「已掌握」；
+        考前最后一轮打开右上角<strong>考试模式</strong>自测（答案与提示会被遮住）。
+      </p>
+      <table class="map-table">
+        <thead><tr><th>部分</th><th>题号</th><th>文件</th><th>考点</th><th class="pts">分值</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sec-dot" style="background:#4f46e5"></span>A · CH18 类与对象</td><td>1</td><td class="mono">CH18/src/Product.php</td><td>属性声明、构造方法、封装</td><td class="pts">12</td></tr>
+          <tr><td>A</td><td>2</td><td class="mono">CH18/src/Product.php</td><td>__toString、getter/setter、数据校验</td><td class="pts">14</td></tr>
+          <tr><td>A</td><td>3</td><td class="mono">CH18/public/index.php</td><td>require_once、实例化、插值输出</td><td class="pts">10</td></tr>
+          <tr><td><span class="sec-dot" style="background:#0ea5e9"></span>B · CH19 demo1 继承</td><td>4</td><td class="mono">CH19/demo1/src/Vehicle.php</td><td>protected 与继承可见性</td><td class="pts">6</td></tr>
+          <tr><td>B</td><td>5</td><td class="mono">CH19/demo1/src/Car.php</td><td>extends、新增属性、字符串插值</td><td class="pts">12</td></tr>
+          <tr><td>B</td><td>6</td><td class="mono">CH19/demo1/public/index.php</td><td>public 直接赋值 vs setter</td><td class="pts">10</td></tr>
+          <tr><td><span class="sec-dot" style="background:#10b981"></span>C · CH19 demo2 方法增强</td><td>7</td><td class="mono">CH19/demo2/src/Dessert.php</td><td>parent::__construct 构造增强</td><td class="pts">12</td></tr>
+          <tr><td>C</td><td>8</td><td class="mono">CH19/demo2/src/Dessert.php</td><td>重写 __toString、.= 累加</td><td class="pts">12</td></tr>
+          <tr><td>C</td><td>9</td><td class="mono">CH19/demo2/public/index.php</td><td>print 对象触发 __toString、var_dump</td><td class="pts">12</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="4">合计</td><td class="pts">100</td></tr></tfoot>
+      </table>
+      <p class="cheats-title">老师代码风格速记（写答案时照这个来，判卷更稳）</p>
+      <ul class="cheats">
+        <li>类文件注释骨架：<code>// property</code> → <code>// magic method</code> → <code>// getter and setter</code> → <code>// custom methods</code></li>
+        <li>构造方法里<strong>调用 setter</strong> 赋值，校验逻辑只写一份</li>
+        <li>子类要读父类属性 → <code>protected</code>；复用父类逻辑 → <code>parent::</code></li>
+        <li>脚本第一行：<code>require_once '../src/Xxx.php';</code>，先父类后子类</li>
+        <li>输出用 <code>print</code>，调试用 <code>var_dump</code></li>
+        <li>双引号插值 <code>"{$this->name}"</code>；字符串拼接用 <code>.</code>、累加用 <code>.=</code></li>
+      </ul>
+    </section>
+
+    <!-- ============ 9 道题由 JS 渲染 ============ -->
+    <div id="questions"></div>
+  </section>
+</main>
+
+<footer class="page-foot">
+  <span>框架来源：<code>week06_starter</code></span><span>·</span>
+  <span>答案风格来源：<code>week06_demo</code></span><span>·</span>
+  <span><a href="index.html">返回 Week 06 填空练习</a></span><span>·</span>
+  <span><a href="lecture06/index.html">Lecture 06 网页教材</a></span><span>·</span>
+  <span>进度保存在本机浏览器</span>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================================
+     题库：框架 = week06_starter 原样；答案 = week06_demo 逐行同风格 + 中文注释
+     ========================================================================= */
+
+  var SECTIONS = [
+  {
+    id: 'partA', name: 'Part A · CH18 类与对象', color: '#4f46e5',
+    questions: [
+
+    /* ---------------- 第 1 题 ---------------- */
+    {
+      num: 1, id: 'q1', points: 12,
+      title: 'Product：私有属性与构造方法',
+      file: 'CH18/src/Product.php',
+      tags: ['属性声明', '访问修饰符', '构造方法', '封装'],
+      en: 'Declare two <strong>private</strong> properties <code>$name</code> (string) and <code>$price</code> (float) for the <code>Product</code> class, then implement the constructor <code>__construct(float $price, string $name)</code>. The constructor must assign values <strong>through the setters</strong>, so the validation inside <code>setPrice()</code> still works.',
+      zh: '补全 Product 类：声明两个私有属性 <code>$name</code>(string) 与 <code>$price</code>(float)，并实现构造方法。参数顺序为 <code>(float $price, string $name)</code>，且必须<strong>通过 setter 赋值</strong>（不要直接给属性赋值），这样 <code>setPrice()</code> 里的校验在创建对象时同样生效。',
+      starter: String.raw`<?php
+class Product
+{
+    // property
+    // TODO-1 声明私有属性 $name（string）
+    // TODO-2 声明私有属性 $price（float）
+
+    // magic method
+    // constructor
+    // TODO-3 实现构造方法：接收 (float $price, string $name)，内部调用 setter
+
+    // toString
+
+    // getter and setter
+
+    // custom methods
+}`,
+      hints: [
+        '属性 = 修饰符 + 类型 + 名字：<code>private string $name;</code>（private：只有本类能访问）',
+        '构造方法名字固定是 <code>__construct</code>，<strong>两个下划线</strong>开头，别写成 <code>_construct</code>',
+        '方法体写 <code>$this-&gt;setPrice($price);</code>、<code>$this-&gt;setName($name);</code> —— 不要直接 <code>$this-&gt;price = $price;</code>',
+        '老师的参数顺序是 <code>(float $price, string $name)</code>，价格在前'
+      ],
+      answer: String.raw`<?php
+class Product
+{
+    // property
+    private string $name;
+    // 为什么：访问修饰符 + 类型声明是老师的固定写法；
+    // private 让外部不能直接改属性，只能走 setter/getter（封装 encapsulation）
+    private float $price;
+    // 为什么：价格有小数用 float；类型写错考试会扣分
+
+    // magic method
+    // constructor
+    public function __construct(float $price, string $name)
+    {
+        // 为什么：调用 setter 而不是 $this->price = $price;
+        // —— 校验逻辑只在 setPrice() 里写一份，创建对象时同样生效（复用）
+        $this->setPrice($price);
+        $this->setName($name);
+    }
+
+    // toString
+    // getter and setter
+    // （第 2 题继续完成 __toString 与访问器）
+
+    // custom methods
+}`,
+      pitfall: '最常见的丢分点：构造方法里直接 <code>$this-&gt;price = $price;</code> —— 这样 <code>setPrice()</code> 的校验就被绕过了。'
+    },
+
+    /* ---------------- 第 2 题 ---------------- */
+    {
+      num: 2, id: 'q2', points: 14,
+      title: 'Product：__toString 与 getter / setter（含校验）',
+      file: 'CH18/src/Product.php',
+      tags: ['魔术方法', 'getter / setter', '数据校验'],
+      en: 'Continue with <code>Product</code>: implement the magic method <code>__toString()</code> so the object can be printed directly, then write the four accessors <code>setName / getName / setPrice / getPrice</code>. <code>setPrice()</code> must reject negative prices — silently keep the old value.',
+      zh: '接上题继续补全 Product：实现 <code>__toString()</code>（让对象能被 <code>print</code> 直接打印），再写 4 个访问器。<code>setPrice()</code> 要做校验：价格小于 0 时不写入属性（静默保留旧值）。',
+      starter: String.raw`<?php
+class Product
+{
+    // property
+    private string $name;
+    private float $price;
+
+    // magic method
+    // constructor
+    public function __construct(float $price, string $name)
+    {
+        $this->setPrice($price);
+        $this->setName($name);
+    }
+    // toString
+    // TODO-1 实现 __toString()：print 对象时自动调用，必须 return 字符串
+
+    // getter and setter
+    // TODO-2 setName / getName / setPrice / getPrice 四个方法
+    //        setPrice 里做校验：负数不写入
+
+    // custom methods
+}`,
+      hints: [
+        '<code>__toString()</code> 是魔术方法：<code>print</code> 对象时被自动调用，必须 <code>return</code> 字符串',
+        '拼接用点号 <code>.</code>，输出格式：<code>(Product) name: hammer and price 9.99</code>',
+        'setter 返回 <code>: void</code>，getter 返回 <code>: string</code> / <code>: float</code>（写在圆括号后面）',
+        '校验：<code>if($price &gt;=0){ $this-&gt;price = $price; }</code> —— 负数“静默丢弃”，不报错也不覆盖'
+      ],
+      answer: String.raw`<?php
+class Product
+{
+    // property
+    private string $name;
+    private float $price;
+
+    // magic method
+    // constructor
+    public function __construct(float $price, string $name)
+    {
+        $this->setPrice($price);
+        $this->setName($name);
+    }
+    // toString
+    public function __toString()
+    {
+        // 为什么：print 对象时 PHP 自动调用这个魔术方法
+        // 为什么：必须用 return 返回字符串，不能在方法里 echo
+        // 为什么：拼接用点号 .，输出格式照老师 demo：
+        // (Product) name: hammer and price 9.99
+        return '(Product) name: ' . $this->name . ' and price '. $this->price;
+    }
+
+    // getter and setter
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+    // 为什么：setter 不返回值所以 : void；参数要带类型 string
+    public function getName(): string
+    {
+        return $this->name;
+    }
+    // 为什么：返回类型写在圆括号后面 → : string
+    public function setPrice(float $price): void
+    {
+        // 为什么：校验写在 setter 里 —— 负数“静默丢弃”：不赋值、不报错
+        // 为什么：if($price >=0){ 的紧凑写法是老师 demo 原样，保持一致即可
+        if($price >=0){
+            $this->price = $price;
+        }
+    }
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    // custom methods
+}`,
+      pitfall: '两个高频丢分点：<code>setPrice()</code> 忘写 if 校验；<code>__toString()</code> 忘了 <code>return</code>（声明了返回值却不返回，<code>print</code> 时直接报错）。'
+    },
+
+    /* ---------------- 第 3 题 ---------------- */
+    {
+      num: 3, id: 'q3', points: 10,
+      title: '使用 Product：public/index.php',
+      file: 'CH18/public/index.php',
+      tags: ['require_once', '实例化', '方法调用', '字符串插值'],
+      en: 'The starter <code>public/index.php</code> is an empty script. Write it from scratch: load the class with <code>require_once</code>, create two objects, modify properties through setters, then print the price and the objects.',
+      zh: 'starter 里这个脚本是<strong>空文件</strong>，要从零写：引入 Product 类，创建两个对象，通过 setter 修改属性，最后打印价格和对象。注意 <code>setPrice(-100)</code> 必须<strong>不生效</strong>——这正是校验的意义。',
+      starter: String.raw`<?php
+// TODO-1 引入 Product 类（注意相对路径）
+// TODO-2 创建第一个对象：先给“空值”，再用 setter 赋值
+// TODO-3 连续 setPrice(9.99) / setPrice(0.99) / setPrice(-100) 观察校验
+// TODO-4 创建第二个对象 new Product(100, 'nail')
+// TODO-5 用 print 输出价格与对象（插值写法）`,
+      hints: [
+        '第一行永远是 <code>require_once \'../src/Product.php\';</code>（相对 <code>public/</code> 的路径）',
+        '<code>new Product(0, \'\')</code> 先造“空”对象，再用 setter 填值；第二个对象直接 <code>new Product(100, \'nail\')</code>',
+        '<code>setPrice(-100)</code> 会被拒绝 —— 价格停留在 <code>0.99</code>',
+        '<code>"{$product}"</code>：对象放进双引号的 <code>{}</code> 里会自动调用 <code>__toString()</code>'
+      ],
+      answer: String.raw`<?php
+
+require_once '../src/Product.php';
+// 为什么：脚本在 public/ 里，类文件在 ../src/ 里；_once 防止重复引入
+
+# $product->name = "hammer";
+# $product->price = 9.99;
+// 为什么：这两行在老师 demo 里被 # 注释掉 —— $name/$price 是 private，
+// 类外直接赋值是非法的，这正是封装的意义；必须改用 setter
+
+// instantiate a new object
+$product = new Product(0, '');
+// 为什么：构造方法必须传两个参数 (price, name)；先给空值，再用 setter 填
+$product->setName('hammer');
+$product->setPrice(9.99);
+$product->setPrice(0.99);
+$product->setPrice(-100);
+// 为什么：-100 < 0 被 setPrice() 拒绝，价格停留在 0.99 —— 这行就是用来验证校验的
+
+$product2 = new Product(100, 'nail');
+// 为什么：合法初值可以由构造方法直接给
+
+print "Product price is {$product->getPrice()}\n";
+// 为什么：双引号里 {$...} 是插值；\n 换行，命令行阅读更清晰
+// 注：demo 原文把 Product 拼成 Procuct（笔误），考试写正确拼写即可
+print "The object product is {$product}\n";
+// 为什么：对象写进 {} 里，PHP 自动调用 __toString()
+print "The object product is {$product2}";`,
+      output: String.raw`Product price is 0.99
+The object product is (Product) name: hammer and price 0.99
+The object product is (Product) name: nail and price 100`,
+      outputNote: '易错：最终价格是 <code>0.99</code>（不是 9.99，更不是 -100）—— 最后一次合法调用是 <code>setPrice(0.99)</code>，<code>-100</code> 被拒绝。float 100 拼进字符串输出为 <code>100</code>。',
+      pitfall: '很多人以为最后价格是 <code>-100</code> 或 <code>9.99</code> —— 正确答案是 <code>0.99</code>，考的就是“校验静默丢弃”。'
+    }
+  ]},
+
+  {
+    id: 'partB', name: 'Part B · CH19 demo1 继承', color: '#0ea5e9',
+    questions: [
+
+    /* ---------------- 第 4 题 ---------------- */
+    {
+      num: 4, id: 'q4', points: 6,
+      title: 'Vehicle：把 $makeModel 改成 protected',
+      file: 'CH19/demo1/src/Vehicle.php',
+      tags: ['访问修饰符', 'protected', '继承'],
+      en: 'In the starter, <code>$makeModel</code> is declared <code>private</code>, but the subclass <code>Car</code> must read <code>$this-&gt;makeModel</code> directly inside its own method. Change exactly <strong>one word</strong> so the subclass can read it while outside code still cannot.',
+      zh: 'starter 里 <code>$makeModel</code> 声明为 <code>private</code>，但子类 <code>Car</code> 要在自己的方法里直接读取 <code>$this-&gt;makeModel</code>。只改<strong>一个单词</strong>：让子类能读、类外仍然不能碰。',
+      starter: String.raw`<?php
+abstract class Vehicle
+{
+    private string $makeModel; // start with private method
+    // TODO 只改这一行的修饰符：Car 子类要直接读取 $makeModel
+    private int $numPassengers;
+    private float $topSpeed;
+
+    public function getMakeModel(): string
+    {
+        return $this->makeModel;
+    }
+
+    public function setMakeModel(string $makeModel): void
+    {
+        $this->makeModel = $makeModel;
+    }
+
+    public function getNumPassengers(): int
+    {
+        return $this->numPassengers;
+    }
+
+    public function setNumPassengers(int $numPassengers): void
+    {
+        $this->numPassengers = $numPassengers;
+    }
+
+    public function getTopSpeed(): float
+    {
+        return $this->topSpeed;
+    }
+
+    public function setTopSpeed(float $topSpeed): void
+    {
+        $this->topSpeed = $topSpeed;
+    }
+}`,
+      hints: [
+        '三种修饰符：<code>private</code> 只有本类 / <code>protected</code> 本类 + 子类 / <code>public</code> 谁都能访问',
+        '判断依据：子类 Car 要读 → <code>protected</code>；既保住封装又能被子类访问',
+        '只需要改一个单词，其余代码一行不动'
+      ],
+      answer: String.raw`<?php
+abstract class Vehicle
+{
+    protected string $makeModel; // start with private method
+    // 为什么：private 只有 Vehicle 自己能访问，子类 Car 读 $this->makeModel 会报错；
+    // protected = 本类 + 子类可访问、类外仍不可访问 —— 继承场景的正确选择；
+    // public 也能让子类访问，但会把属性暴露给所有外部代码（简答题会扣封装分）
+    private int $numPassengers;
+    private float $topSpeed;
+
+    public function getMakeModel(): string
+    {
+        return $this->makeModel;
+    }
+
+    public function setMakeModel(string $makeModel): void
+    {
+        $this->makeModel = $makeModel;
+    }
+
+    public function getNumPassengers(): int
+    {
+        return $this->numPassengers;
+    }
+
+    public function setNumPassengers(int $numPassengers): void
+    {
+        $this->numPassengers = $numPassengers;
+    }
+
+    public function getTopSpeed(): float
+    {
+        return $this->topSpeed;
+    }
+
+    public function setTopSpeed(float $topSpeed): void
+    {
+        $this->topSpeed = $topSpeed;
+    }
+}`,
+      pitfall: '写成 <code>public</code> 也能跑，但把属性暴露给了类外，简答题问“为什么要 protected”时说不出封装理由会扣分。'
+    },
+
+    /* ---------------- 第 5 题 ---------------- */
+    {
+      num: 5, id: 'q5', points: 12,
+      title: '新建 Car：继承 Vehicle 并新增 $bodyShape',
+      file: 'CH19/demo1/src/Car.php',
+      tags: ['继承', 'extends', '字符串插值'],
+      en: 'The starter has <strong>no</strong> <code>Car.php</code> — create it. <code>Car extends Vehicle</code>, adds a public property <code>$bodyShape</code>, and provides <code>getMakeModelShape()</code> returning <code>makeModel, bodyShape</code> using string interpolation.',
+      zh: 'starter 里<strong>没有</strong>这个文件，需要新建：<code>Car</code> 继承 <code>Vehicle</code>，新增 public 属性 <code>$bodyShape</code>，并提供 <code>getMakeModelShape()</code> 用<strong>字符串插值</strong>返回 <code>makeModel, bodyShape</code>。',
+      starter: String.raw`<?php
+
+// 该文件在 starter 中不存在，需要你新建
+// TODO-1 class Car extends Vehicle（继承父类）
+// TODO-2 新增 public 属性 $bodyShape（string）
+// TODO-3 getMakeModelShape()：用插值返回 "makeModel, bodyShape"`,
+      hints: [
+        '类声明：<code>class Car extends Vehicle{</code> —— <code>extends</code> 实现继承',
+        '只声明<strong>新增</strong>的 <code>public string $bodyShape;</code>，<code>$makeModel</code> 不要重复声明',
+        '返回值用双引号插值：<code>"{$this-&gt;makeModel}, {$this-&gt;bodyShape}"</code>（单引号不会解析）',
+        '能直接读 <code>$this-&gt;makeModel</code> 的前提：第 4 题已把它改成 <code>protected</code>'
+      ],
+      answer: String.raw`<?php
+
+class Car extends Vehicle{
+    // 为什么：extends 继承 —— Car 自动拥有 Vehicle 的全部属性与方法；
+    // 老师风格：{ 直接跟在类名后面，照抄即可
+    public string $bodyShape;
+    // 为什么：子类只声明“新增”的属性；
+    // $makeModel 已在父类（protected），重复声明会变成另一个属性，丢分
+
+    public function getMakeModelShape(){
+        // 为什么：老师这里没写返回类型，照抄即可；
+        // 方法体能直接用 $this->makeModel，前提是第 4 题把它改成了 protected
+        return "{$this->makeModel}, {$this->bodyShape}";
+        // 为什么：双引号字符串里 {$this->...} 是插值 —— 单引号不会解析变量
+    }
+}`,
+      pitfall: '在 Car 里重复声明 <code>$makeModel</code>：会遮蔽（shadow）父类属性，<code>getMakeModel()</code> 与 <code>getMakeModelShape()</code> 读到的不再是同一个值。'
+    },
+
+    /* ---------------- 第 6 题 ---------------- */
+    {
+      num: 6, id: 'q6', points: 10,
+      title: '使用 Car：demo1/public/index.php',
+      file: 'CH19/demo1/public/index.php',
+      tags: ['require_once', '实例化', '对象属性赋值', 'var_dump'],
+      en: 'The starter script is empty. Load both classes (parent first), create a <code>Car</code>, assign <code>$bodyShape</code> directly (it is public) but <code>$makeModel</code> through its setter (it is protected), then print and <code>var_dump()</code> the object.',
+      zh: 'starter 里是空文件。引入父类与子类（先父后子），创建 <code>Car</code> 对象：<code>$bodyShape</code> 是 public 可以<strong>直接赋值</strong>，<code>$makeModel</code> 是 protected 必须走 <code>setMakeModel()</code>；最后 <code>print</code> 并 <code>var_dump()</code>。',
+      starter: String.raw`<?php
+// TODO-1 引入父类 Vehicle 与子类 Car（顺序：先父后子）
+// TODO-2 new Car() 并给 bodyShape 赋值 'sedan'（注意可见性）
+// TODO-3 给 makeModel 赋值 'Ford Mustang'（注意可见性）
+// TODO-4 print $car->getMakeModelShape(); 然后 var_dump($car);`,
+      hints: [
+        '两个 <code>require_once</code>：先 <code>Vehicle.php</code> 后 <code>Car.php</code>（Car 依赖 Vehicle）',
+        '<code>new Car()</code> 不需要参数 —— 父类没有构造方法',
+        'public 属性直接 <code>$car-&gt;bodyShape = \'sedan\';</code>；protected 的必须走 <code>setMakeModel()</code>',
+        '最后 <code>var_dump($car);</code> 观察对象的类型、属性与可见性'
+      ],
+      answer: String.raw`<?php
+
+require_once '../src/Vehicle.php';
+require_once '../src/Car.php';
+// 为什么：父类、子类两个文件都要引入；Car 依赖 Vehicle，先父后子
+
+$car = new Car();
+// 为什么：父类没有构造方法，new Car() 不需要参数
+$car ->bodyShape = 'sedan';
+// 为什么：bodyShape 是 public，类外可以直接赋值
+// （老师原文 $car ->bodyShape 多了个空格，属于笔误风格，$car->bodyShape 更规范）
+$car->setMakeModel('Ford Mustang');
+// 为什么：makeModel 是 protected —— 类外写 $car->makeModel = ... 会 fatal，
+// 必须走 setter
+print $car->getMakeModelShape();
+// 为什么：调用子类自己的方法 → 输出 Ford Mustang, sedan
+var_dump($car);
+// 为什么：var_dump 打印对象完整结构（类型/属性/可见性），调试常用`,
+      output: String.raw`Ford Mustang, sedan
+object(Car)#1 (4) {
+  ["bodyShape"]=> string(5) "sedan"
+  ["makeModel":protected]=> string(12) "Ford Mustang"
+  ["numPassengers":"Vehicle":private]=> uninitialized(int)
+  ["topSpeed":"Vehicle":private]=> uninitialized(float)
+}`,
+      outputNote: '第二行起是 <code>var_dump</code> 示意（PHP 8）：注意 <code>:protected</code> / <code>:private</code> 的可见性标注，以及未赋值的类型化属性显示 <code>uninitialized</code>。',
+      pitfall: '直接写 <code>$car-&gt;makeModel = \'Ford Mustang\';</code> —— protected 属性在类外不可访问，直接 fatal error。'
+    }
+  ]},
+
+  {
+    id: 'partC', name: 'Part C · CH19 demo2 方法增强', color: '#10b981',
+    questions: [
+
+    /* ---------------- 第 7 题 ---------------- */
+    {
+      num: 7, id: 'q7', points: 12,
+      title: 'Dessert：构造方法的方法增强（augmentation）',
+      file: 'CH19/demo2/src/Dessert.php',
+      tags: ['parent::__construct', '方法增强'],
+      en: '<code>Dessert extends Food</code>, but its constructor takes an extra <code>$calories</code>. Fill in the constructor body the <strong>augmentation</strong> way: call the parent constructor first, then add your own step.',
+      zh: '<code>Dessert</code> 继承 <code>Food</code>，但构造方法多了热量参数。请用<strong>方法增强（augmentation）</strong>的套路补全构造方法体：先调用父类构造方法，再做子类自己的步骤。',
+      starter: String.raw`<?php
+
+class Dessert extends Food
+{
+    // promotion
+    public function __construct(string $name, int $calories)
+    {
+        // TODO-1 先复用父类构造方法（传 $name）
+        // TODO-2 再设置热量
+    }
+
+    public function __toString(): string
+    {
+        // augmentation
+        // （__toString 的重写见第 8 题）
+    }
+
+    public function setCalories(int $calories)
+    {
+        $this->calories = $calories;
+    }
+}`,
+      hints: [
+        'PHP <strong>不会自动调用</strong>父类构造方法 → 必须手写 <code>parent::__construct($name);</code>',
+        '“增强 (augmentation)” = 先复用父类逻辑，再补子类自己的步骤',
+        '第二步：<code>$this-&gt;setCalories($calories);</code>',
+        '不写 <code>parent::__construct</code> 的后果：<code>$name</code> 永远没被赋值，对象缺名字'
+      ],
+      answer: String.raw`<?php
+
+class Dessert extends Food
+{
+    // promotion
+    public function __construct(string $name, int $calories)
+    {
+        // augmentation
+        parent::__construct($name);
+        // 为什么：PHP 不会自动调用父类构造方法 —— 少了这行 $name 就不会被赋值；
+        // 复用父类逻辑，而不是重写一遍 $this->name = $name;
+        $this->setCalories($calories);
+        // 为什么：增强 = 父类先做，子类再补自己的步骤
+    }
+
+    public function __toString(): string
+    {
+        // augmentation
+        // （第 8 题完成）
+    }
+
+    public function setCalories(int $calories)
+    {
+        $this->calories = $calories;
+    }
+}`,
+      pitfall: '忘记 <code>parent::__construct($name);</code> —— 对象能创建，但 <code>$name</code> 是空的，<code>__toString()</code> 输出 <code>(FOOD) </code> 后面什么都没有。'
+    },
+
+    /* ---------------- 第 8 题 ---------------- */
+    {
+      num: 8, id: 'q8', points: 12,
+      title: 'Dessert：重写 __toString 追加热量信息',
+      file: 'CH19/demo2/src/Dessert.php',
+      tags: ['方法重写', 'parent::__toString', '.= 累加'],
+      en: 'Override <code>__toString()</code>: take the parent\'s output, append the calories sentence with <code>.=</code>, and return the combined string. This is method augmentation again — parent first, child adds more.',
+      zh: '重写 <code>__toString()</code>：先拿父类的输出，再用 <code>.=</code> 追加自己的热量信息，最后 return 完整字符串。这是方法增强的第二个经典场景：父类在前，子类追加。',
+      starter: String.raw`<?php
+
+class Dessert extends Food
+{
+    // promotion
+    public function __construct(string $name, int $calories)
+    {
+        // augmentation
+        parent::__construct($name);
+        $this->setCalories($calories);
+    }
+
+    public function __toString(): string
+    {
+        // augmentation
+        // TODO-1 取父类的输出
+        // TODO-2 用 .= 追加热量信息
+        // TODO-3 return
+    }
+
+    public function setCalories(int $calories)
+    {
+        $this->calories = $calories;
+    }
+}`,
+      hints: [
+        '第一步：<code>$message = parent::__toString();</code> 拿到 <code>"(FOOD) Apple pie"</code>',
+        '第二步：<code>$message .= "I am a Dessert with {$this-&gt;calories} calories";</code>（<code>.=</code> 累加）',
+        '最后 <code>return $message;</code> —— 声明了 <code>: string</code>，不 return 直接 fatal error',
+        'demo 里把 Dessert 拼成了 “Desset”，是笔误；写正确拼写即可'
+      ],
+      answer: String.raw`<?php
+
+class Dessert extends Food
+{
+    // promotion
+    public function __construct(string $name, int $calories)
+    {
+        // augmentation
+        parent::__construct($name);
+        $this->setCalories($calories);
+    }
+
+    public function __toString(): string
+    {
+        // augmentation
+        $message = parent::__toString();
+        // 为什么：第一步拿父类输出 "(FOOD) Apple pie" —— 复用，而不是重写
+        $message .= "I am a Dessert with {$this->calories} calories";
+        // 为什么：.= 把子类信息累加到父类输出后面（demo 原文拼成 Desset，笔误）
+        return $message;
+        // 为什么：声明了 : string 返回类型，没有 return 直接 fatal error
+    }
+
+    public function setCalories(int $calories)
+    {
+        $this->calories = $calories;
+    }
+}`,
+      pitfall: '用 <code>echo</code>/<code>print</code> 代替 <code>return</code>，或漏掉 <code>.=</code> —— 前者直接报错，后者父类信息丢失。'
+    },
+
+    /* ---------------- 第 9 题 ---------------- */
+    {
+      num: 9, id: 'q9', points: 12,
+      title: '使用 Dessert：demo2/public/index.php',
+      file: 'CH19/demo2/public/index.php',
+      tags: ['实例化', '__toString', 'var_dump'],
+      en: 'The starter script is empty. Load <code>Food</code> and <code>Dessert</code> (parent first), create a dessert, <code>print</code> the object (this triggers <code>__toString()</code>), then <code>var_dump()</code> it.',
+      zh: 'starter 里是空文件。引入 <code>Food</code> 与 <code>Dessert</code>（先父后子），创建甜点对象，直接 <code>print</code> 对象（自动触发 <code>__toString()</code>），再用 <code>var_dump()</code> 观察结构。',
+      starter: String.raw`<?php
+// TODO-1 引入 Food.php 与 Dessert.php（先父后子）
+// TODO-2 new Dessert('Apple pie', 100)
+// TODO-3 print $food;（观察 __toString 被触发）
+// TODO-4 var_dump($food);`,
+      hints: [
+        '<code>Food.php</code> 和 <code>Dessert.php</code> 两个都要引入，先父后子',
+        '构造方法是 <code>(string $name, int $calories)</code>：<code>new Dessert(\'Apple pie\',100);</code>',
+        '<code>print $food;</code> 一条语句触发<strong>两段</strong> <code>__toString()</code>（父类 + 子类）',
+        '<code>var_dump($food);</code> 观察属性与可见性标注'
+      ],
+      answer: String.raw`<?php
+
+require_once '../src/Food.php';
+require_once '../src/Dessert.php';
+// 为什么：先父类后子类；Dessert extends Food，顺序反了会“类找不到”
+
+$food = new Dessert('Apple pie',100);
+// 为什么：构造方法 (string $name, int $calories)；变量名叫 $food 也行，
+// 它装的是子类 Dessert 的对象（多态：子类对象可以放进父类名字的变量里）
+
+print $food;
+// 为什么：print 对象 → 自动调用 Dessert::__toString()
+// → 里面又调用 parent::__toString()，两段文字拼在一起输出
+var_dump($food);
+// 为什么：观察对象结构 —— name(protected) 与 calories`,
+      output: String.raw`(FOOD) Apple pieI am a Dessert with 100 calories
+object(Dessert)#1 (2) {
+  ["name":"Food":protected]=> string(9) "Apple pie"
+  ["calories"]=> int(100)
+}`,
+      outputNote: '注意 <code>pieI</code> 之间<strong>没有空格</strong>：父类返回 <code>"(FOOD) Apple pie"</code> 末尾没有空格/换行，<code>.=</code> 直接接上 —— 考试问输出时的经典易错点。<code>calories</code> 是 <code>setCalories()</code> 里动态创建的属性（demo 原样，照写即可）。',
+      pitfall: '以为 <code>pieI</code> 连在一起是 bug —— 这是父类 <code>__toString()</code> 返回值末尾没有空格导致的，属于正常输出。'
+    }
+  ]}
+  ];
+
+  /* ------------------------------ 高亮 ------------------------------ */
+
+  var TOKEN_RE = /(\/\/[^\n]*|#[^\n]*)|('(?:\\.|[^'\\\n])*'|"(?:\\.|[^"\\\n])*")|(\$[A-Za-z_]\w*)|(<\?php|\?>)|(\b(?:abstract|class|extends|implements|interface|function|public|private|protected|static|const|return|new|if|else|elseif|foreach|for|while|switch|case|break|continue|print|echo|require_once|require|include_once|include|parent|self|void|int|float|string|bool|array|null|true|false|var_dump|unset|instanceof)\b)|(\b\d+(?:\.\d+)?\b)|(->|::|=>)/g;
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function hl(line) {
+    var out = '', last = 0, m;
+    TOKEN_RE.lastIndex = 0;
+    while ((m = TOKEN_RE.exec(line))) {
+      out += esc(line.slice(last, m.index));
+      var cls;
+      if (m[1]) {
+        cls = /TODO/.test(m[1]) ? 'c-todo' : (/[\u4e00-\u9fff]/.test(m[1]) ? 'c-why' : 'c-com');
+      } else if (m[2]) cls = 'c-str';
+      else if (m[3]) cls = 'c-var';
+      else if (m[4]) cls = 'c-tag';
+      else if (m[5]) cls = 'c-kw';
+      else if (m[6]) cls = 'c-num';
+      else cls = 'c-op';
+      out += '<span class="' + cls + '">' + esc(m[0]) + '</span>';
+      last = m.index + m[0].length;
+    }
+    out += esc(line.slice(last));
+    return out;
+  }
+
+  function hlLines(code) {
+    return code.split('\n').map(function (l) {
+      return '<span class="line">' + (l ? hl(l) : ' ') + '</span>';
+    }).join('');
+  }
+
+  /* ------------------------------ 渲染 ------------------------------ */
+
+  var STORE_KEY = 'csis3280.week06.mockexam.v1';
+  var IDS = [];
+  SECTIONS.forEach(function (s) { s.questions.forEach(function (q) { IDS.push(q.id); }); });
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        var p = JSON.parse(raw);
+        return { done: p.done || {}, exam: !!p.exam };
+      }
+    } catch (e) { /* ignore */ }
+    return { done: {}, exam: false };
+  }
+  var state = loadState();
+  function persist() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+  }
+
+  function qCard(q, sec) {
+    var h = '';
+    h += '<article class="qcard" id="' + q.id + '">';
+    h += '<div class="qhead"><div>';
+    h += '<span class="qnum" style="background:' + sec.color + '">第 ' + q.num + ' 题</span> ';
+    h += '<span class="chip pts">' + q.points + ' 分</span>';
+    h += '<h3 class="qtitle">' + q.title + '</h3>';
+    h += '<div class="qmeta"><span class="chip file">' + q.file + '</span>';
+    q.tags.forEach(function (t) { h += '<span class="chip">' + t + '</span>'; });
+    h += '</div></div>';
+    h += '<button class="btn master-btn" type="button" data-master="' + q.id + '" aria-pressed="false">已掌握</button>';
+    h += '</div>';
+
+    /* 题目在最顶部：英文 + 中文 */
+    h += '<div class="qdesc">';
+    h += '<p class="qen"><span class="lang en">EN</span>' + q.en + '</p>';
+    h += '<p class="qzh"><span class="lang zh">中文</span>' + q.zh + '</p>';
+    h += '</div>';
+
+    /* 步骤：左右两栏 */
+    h += '<div class="steps">';
+
+    /* 左：老师给的代码框架 + 提示 */
+    h += '<div class="step">';
+    h += '<div class="step-head"><span class="step-badge b1">STEP 1</span><strong>老师给的代码框架</strong><span class="step-sub">先照着框架自己写</span></div>';
+    h += '<div class="codeblock"><div class="code-head"><span>' + q.file + '</span><span>week06_starter</span></div>';
+    h += '<pre>' + hlLines(q.starter) + '</pre></div>';
+    h += '<div class="hints lockable"><div class="lock-content"><h4>提示 Hints（先自己想，再看）</h4><ol>';
+    q.hints.forEach(function (x) { h += '<li>' + x + '</li>'; });
+    h += '</ol></div><button class="lock-btn" type="button">显示提示</button></div>';
+    h += '</div>';
+
+    /* 右：代码补全（参考答案 + 为什么这样写） */
+    h += '<div class="step">';
+    h += '<div class="step-head"><span class="step-badge b2">STEP 2</span><strong>代码补全 · 参考答案</strong><span class="step-sub">琥珀色注释 = 为什么这样写</span></div>';
+    h += '<div class="lockable"><div class="lock-content">';
+    h += '<div class="codeblock"><div class="code-head"><span>' + q.file + '</span><span><button class="copy-btn" type="button" data-copy="' + q.id + '">复制代码</button></span></div>';
+    h += '<pre>' + hlLines(q.answer) + '</pre></div>';
+    h += '</div><button class="lock-btn" type="button">显示参考答案</button></div>';
+    h += '</div>';
+
+    h += '</div>'; /* /steps */
+
+    if (q.output || q.pitfall) {
+      h += '<div class="qfoot">';
+      if (q.output) {
+        h += '<div class="outbox lockable"><div class="lock-content">';
+        h += '<div class="out-head">输出示意 · PHP 8 命令行</div>';
+        h += '<pre>' + esc(q.output) + '</pre>';
+        h += '<div class="out-note">' + q.outputNote + '</div>';
+        h += '</div><button class="lock-btn" type="button">显示输出</button></div>';
+      }
+      if (q.pitfall) {
+        h += '<div class="pitfall lockable"><div class="lock-content"><h4>易错点</h4><p>' + q.pitfall + '</p></div>';
+        h += '<button class="lock-btn" type="button">显示易错点</button></div>';
+      }
+      h += '</div>';
+    }
+
+    h += '</article>';
+    return h;
+  }
+
+  function render() {
+    var sidebar = document.getElementById('sidebar');
+    var wrap = document.getElementById('questions');
+    var sh = '<div class="side-part"><h5>导航</h5>';
+    sh += '<a class="side-item" href="#intro" data-target="intro"><span class="side-num" style="background:#64748b">卷</span>考前说明 · 考点分布</a>';
+    sh += '</div>';
+    SECTIONS.forEach(function (sec) {
+      sh += '<div class="side-part"><h5>' + sec.name + '</h5>';
+      sec.questions.forEach(function (q) {
+        sh += '<a class="side-item" href="#' + q.id + '" data-target="' + q.id + '">' +
+              '<span class="side-num" style="background:' + sec.color + '">' + q.num + '</span>' +
+              esc(q.title.replace(/：.*$/, '')) + '</a>';
+      });
+      sh += '</div>';
+    });
+    sidebar.innerHTML = sh;
+
+    var qh = '';
+    SECTIONS.forEach(function (sec) {
+      sec.questions.forEach(function (q) { qh += qCard(q, sec); });
+    });
+    wrap.innerHTML = qh;
+  }
+
+  /* ------------------------------ 交互 ------------------------------ */
+
+  function countDone() {
+    return IDS.filter(function (id) { return state.done[id]; }).length;
+  }
+  function updateProgress() {
+    var n = countDone(), total = IDS.length;
+    document.getElementById('progressFill').style.width = (n / total * 100) + '%';
+    document.getElementById('progressLabel').textContent = '已掌握 ' + n + ' / ' + total;
+  }
+  function syncMasterButtons() {
+    document.querySelectorAll('.master-btn').forEach(function (b) {
+      var on = !!state.done[b.dataset.master];
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      b.textContent = on ? '✓ 已掌握' : '已掌握';
+    });
+  }
+  function applyExamMode() {
+    document.body.classList.toggle('exam', state.exam);
+    var btn = document.getElementById('examBtn');
+    btn.setAttribute('aria-pressed', state.exam ? 'true' : 'false');
+    btn.textContent = '考试模式：' + (state.exam ? '开' : '关');
+    if (!state.exam) {
+      document.querySelectorAll('.lockable.revealed').forEach(function (el) {
+        el.classList.remove('revealed');
+      });
+    }
+  }
+
+  document.getElementById('questions').addEventListener('click', function (e) {
+    var btn = e.target.closest('button');
+    if (!btn) return;
+    if (btn.dataset.master) {
+      var id = btn.dataset.master;
+      state.done[id] = !state.done[id];
+      if (!state.done[id]) delete state.done[id];
+      persist(); syncMasterButtons(); updateProgress();
+    } else if (btn.dataset.copy) {
+      var q = null;
+      SECTIONS.forEach(function (s) {
+        s.questions.forEach(function (x) { if (x.id === btn.dataset.copy) q = x; });
+      });
+      if (!q) return;
+      var done = function () {
+        var old = btn.textContent;
+        btn.textContent = '已复制 ✓';
+        setTimeout(function () { btn.textContent = old; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(q.answer).then(done, function () { fallbackCopy(q.answer); done(); });
+      } else { fallbackCopy(q.answer); done(); }
+    } else if (btn.classList.contains('lock-btn')) {
+      btn.closest('.lockable').classList.add('revealed');
+    }
+  });
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+    document.body.removeChild(ta);
+  }
+
+  document.getElementById('examBtn').addEventListener('click', function () {
+    state.exam = !state.exam;
+    persist(); applyExamMode();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    if (!confirm('确定清空全部「已掌握」记录？')) return;
+    state.done = {};
+    persist(); syncMasterButtons(); updateProgress();
+  });
+
+  /* 侧栏高亮 */
+  function initSpy() {
+    var items = {};
+    document.querySelectorAll('.side-item').forEach(function (a) {
+      items[a.dataset.target] = a;
+    });
+    var targets = ['intro'].concat(IDS);
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          document.querySelectorAll('.side-item.active').forEach(function (a) {
+            a.classList.remove('active');
+          });
+          var link = items[en.target.id];
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    targets.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+  }
+
+  render();
+  syncMasterButtons();
+  updateProgress();
+  applyExamMode();
+  initSpy();
+})();
+</script>
+</body>
+</html>
