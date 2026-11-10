@@ -10,3 +10,6 @@ Classes and Object (CH 18) · Subclasses and Inheritance (CH 19) · Object Orien
 English: https://johnnylin707.github.io/CSIS3280-week06/lecture06/index.html
 
 Chinese: https://johnnylin707.github.io/CSIS3280-week06/lecture06/zh.html
+
+week06_demo 对照精讲（左 starter / 右 demo，中文注释解释老师补全的代码与用意）
+https://johnnylin707.github.io/CSIS3280-week06/week06_demo.html

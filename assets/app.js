@@ -590,6 +590,22 @@
       ? '继续练习 · 第 ' + (current + 1) + ' 题'
       : '开始代码填空练习';
 
+    var demoLinks = [
+      { g: 'CH18', t: 'Product.php', id: 'ch18-product' },
+      { g: 'CH18', t: 'index.php（入口）', id: 'ch18-index' },
+      { g: 'CH19 demo1', t: 'Vehicle.php', id: 'ch19-vehicle' },
+      { g: 'CH19 demo1', t: 'Car.php（新增）', id: 'ch19-car' },
+      { g: 'CH19 demo1', t: 'index.php（入口）', id: 'ch19-demo1-index' },
+      { g: 'CH19 demo2', t: 'Food.php（未改动）', id: 'ch19-food' },
+      { g: 'CH19 demo2', t: 'Dessert.php', id: 'ch19-dessert' },
+      { g: 'CH19 demo2', t: 'index.php（入口）', id: 'ch19-demo2-index' }
+    ];
+    var demoButtons = demoLinks.map(function (d) {
+      return '<a class="btn btn-ghost btn-sm" href="week06_demo.html#' + d.id + '"' +
+        ' title="左 starter / 右 demo · ' + escapeHtml(d.g) + ' · ' + escapeHtml(d.t) + '">' +
+        ICON.file + escapeHtml(d.g) + ' · ' + escapeHtml(d.t) + '</a>';
+    }).join('');
+
     var chapterCards = LECTURE.chapters.map(function (c) {
       return '<a class="chapter-card" href="' + LECTURE.en + '#' + c.id + '" target="_blank" rel="noopener">' +
         '<span class="cc-num">' + c.num + '</span>' +
@@ -622,6 +638,7 @@
             '<a class="btn btn-primary btn-lg" href="#practice">' + ICON.pencil + escapeHtml(practiceLabel) + '</a>' +
             '<a class="btn btn-ghost btn-lg" href="' + LECTURE.en + '" target="_blank" rel="noopener">' + ICON.book + 'Lecture 06 教材（英文）</a>' +
             '<a class="btn btn-ghost btn-lg" href="' + LECTURE.zh + '" target="_blank" rel="noopener">' + ICON.book + '中文教程</a>' +
+            '<a class="btn btn-ghost btn-lg" href="week06_demo.html">' + ICON.code + 'week06_demo 老师补全了什么</a>' +
           '</div>' +
           '<div class="hero-stats">' +
             '<div class="hero-stat"><strong>' + flat.length + '</strong><span>填空练习题</span></div>' +
@@ -653,6 +670,14 @@
             '<a class="panel-more" href="#practice">进入练习</a></div>' +
             '<p class="panel-sub">题目取自 <code>week06_starter</code> 的空白代码段，参考答案来自 <code>week06_demo</code>，逐空校验并提示缺失内容。</p>' +
             '<div class="q-quick">' + qChips + '</div>' +
+          '</section>' +
+          '<section class="panel" style="grid-column:1/-1">' +
+            '<div class="panel-head"><h2>' + ICON.code + 'week06_demo 对照精讲 · 老师补全了什么</h2>' +
+            '<a class="panel-more" href="week06_demo.html">打开完整对照</a></div>' +
+            '<p class="panel-sub">逐个文件对比 <code>week06_starter</code>（左半边原代码）与 <code>week06_demo</code>（右半边老师完整代码）：' +
+            '绿色是新增代码、黄色是改动行，琥珀色中文注释解释补全部分的功能用途；代码块外的空白区解释「为什么需要补」「用意」「用到的 PHP 用法」，' +
+            '并附上本机 PHP 8.2 实际运行输出。点任一按钮直接跳到该文件的对照。</p>' +
+            '<div style="display:flex;flex-wrap:wrap;gap:8px">' + demoButtons + '</div>' +
           '</section>' +
         '</div>' +
       '</section>';
